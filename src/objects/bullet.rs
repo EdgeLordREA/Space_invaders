@@ -1,7 +1,6 @@
-use macroquad::math::DVec2;
+use macroquad::math::{Vec2};
 
-struct Bullet {
-    pos_x: f32,
-    pos_y: f32,
-    speed: DVec2
+pub struct Bullet {
+    position : Vec2,
+    speed: Vec2
 }

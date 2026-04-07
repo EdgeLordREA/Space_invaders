@@ -1,13 +1,22 @@
 pub mod actions;
-pub mod player;
-pub mod bullet;
 pub mod gamestate;
+mod objects;
 
 use macroquad::*;
+use macroquad::color::*;
 use macroquad::input::{is_key_down, KeyCode};
+use macroquad::prelude::draw_rectangle;
+use macroquad::window::{clear_background, next_frame};
 
-fn main() {
-    println!("Hello, world!");
+#[macroquad::main("BasicShapes")]
+async fn main() {
+    loop {
+        clear_background(BLACK);
+
+        draw_rectangle(0.0, 0.0, 200.0, 200.0, RED);
+        draw_rectangle(10.0, 10.0, 200.0, 200.0, BLUE);
+        next_frame().await
+    }
 }
 
 fn handle_inputs()

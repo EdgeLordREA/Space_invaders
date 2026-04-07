@@ -1,7 +1,8 @@
-struct Player
+use macroquad::math::Vec2;
+
+pub struct Player
 {
-    pos_x: f32,
-    pos_y: f32,
+    position : Vec2,
     speed: f32,
     atk_speed: f32,
     atk_cooldown : f32,
@@ -9,7 +10,7 @@ struct Player
 }
 impl Player
 {
-    pub fn can_attack(self) -> bool
+    pub fn can_attack(&self) -> bool
         {
             self.atk_cooldown < 0.0
         }
