@@ -24,6 +24,7 @@ impl Enemy
             {
                 self.position.x = width + self.size.x;
                 self.dir = Direction::Left;
+                self.position.y += crate::constants::ENEMY_LINE_HEIGHT;
             }
         }
         if let Direction::Left = self.dir
@@ -33,6 +34,7 @@ impl Enemy
             {
                 self.position.x = 0.0;
                 self.dir = Direction::Right;
+                self.position.y += crate::constants::ENEMY_LINE_HEIGHT;
             }
         }
     }
