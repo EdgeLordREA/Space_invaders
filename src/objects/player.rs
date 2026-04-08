@@ -21,7 +21,7 @@ impl Player
         self.atk_cooldown = 1.0 / self.atk_speed
     }
 
-    pub const fn new(screen_width : f32, screen_height : f32) -> Player {
+    pub fn new(screen_width : f32, screen_height : f32) -> Player {
         Player {
             position: Vec2::new(screen_width/2.0, screen_height-10.0), // Start at the origin
             speed: 200.0,                  // Base movement speed
