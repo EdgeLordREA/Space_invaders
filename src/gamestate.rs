@@ -24,7 +24,7 @@ impl GameState {
 
     pub fn run_state(&mut self, delta : f32)
     {
-        
+
         for bullet in self.bullets.iter_mut(){
             bullet.move_bullet(delta);
         }

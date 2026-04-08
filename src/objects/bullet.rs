@@ -19,9 +19,13 @@ impl Bullet {
     {
         self.position += self.speed * delta;
     }
+    
+    pub fn get_position(&self) -> Vec2 {
+        self.position
+    }
 }
 
-enum Source{
+pub enum Source{
     Player,
     Enemy
 }
