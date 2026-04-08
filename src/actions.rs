@@ -1,15 +1,19 @@
-pub fn do_w()
+use crate::objects::player::Player;
+
+pub fn do_w(player: &mut Player)
 {
-    todo!()
+    todo!("W not implemented")
 }
-pub fn do_a() {
-    todo!()
+pub fn do_a(player: &mut Player) {
+    todo!("A not implemented")
 }
 
-pub fn do_s()
-{}
-
-pub fn do_d()
+pub fn do_s(player: &mut Player)
 {
-    todo!()
+    todo!("S not implemented")
+}
+
+pub fn do_d(player: &mut Player)
+{
+    todo!("D not implemented")
 }
