@@ -1,5 +1,5 @@
-use crate::config::Config;
-use crate::math;
+use crate::functionals::config::Config;
+use crate::functionals::math;
 use crate::objects::*;
 use crate::objects::player::Player;
 
@@ -7,16 +7,16 @@ pub struct GameState
 {
     pub player : player::Player,
     pub bullets : Vec<bullet::Bullet>,
-    pub enemies : Vec<enemy::Enemy>,
+    pub enemies : Vec<classic_enemy::ClassicEnemy>,
     pub config : Config,
 }
 
 impl GameState {
     pub fn new(screen_width : f32, screen_height : f32) -> GameState {
-        let player = Player::new(screen_width, screen_height);
         let bullets : Vec<bullet::Bullet> = Vec::new();
-        let enemies : Vec<enemy::Enemy> = Vec::new();
+        let enemies : Vec<classic_enemy::ClassicEnemy> = Vec::new();
         let config = Config{screen_width, screen_height};
+        let player = Player::new(config.screen_width, config.screen_height);
         GameState{
             player,
             bullets,

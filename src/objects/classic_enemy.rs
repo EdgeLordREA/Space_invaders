@@ -1,6 +1,8 @@
-use macroquad::math::{vec2, Vec2};
+use serde::Deserialize;
+use crate::functionals::math::Vec2;
 
-pub struct Enemy
+#[derive(Debug, Deserialize)]
+pub struct ClassicEnemy
 {
     health : f32,
     speed : f32,
@@ -9,11 +11,12 @@ pub struct Enemy
     size: Vec2,
 }
 
+#[derive(Debug, Deserialize)]
 enum Direction {
     Left,
     Right,
 }
-impl Enemy
+impl ClassicEnemy
 {
     pub fn r#move(&mut self, width : f32)
     {

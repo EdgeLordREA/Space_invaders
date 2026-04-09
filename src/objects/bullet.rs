@@ -1,4 +1,4 @@
-use macroquad::math::{Vec2};
+use crate::functionals::math::Vec2;
 
 pub struct Bullet {
     position : Vec2,

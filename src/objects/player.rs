@@ -26,7 +26,6 @@ impl Player
         let x_offset = self.dimensions / 2.0;
         let bullet = Bullet::new(self.position + x_offset,self.bullet_size, self.bullet_speed, Source::Player, damage);
         bullets.push(bullet);
-        self.bullet_size *= 1.5;
     }
 
     pub fn calculate_damage(&self) -> f32
@@ -47,7 +46,7 @@ impl Player
             atk_cooldown: 0.0,             // Ready to attack immediately
             bullet_damage: 10.0,                     // Base damage
             bullet_speed: Vec2::new(0.0, -100.0), // speed and direction of bullet
-            bullet_size: Vec2::new(1.0, 1.0), // size of bullet
+            bullet_size: Vec2::new(4.0, 4.0), // size of bullet
         }
     }
     pub fn position(&self) -> Vec2

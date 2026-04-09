@@ -1,18 +1,19 @@
-pub mod actions;
 pub mod gamestate;
 mod objects;
-pub mod math;
-pub mod config;
 pub mod constants;
+pub mod managers;
+pub mod functionals;
 
 use crate::gamestate::GameState;
 use macroquad::color::*;
-use macroquad::input::{KeyCode, is_key_down};
+use macroquad::input::{is_key_down, KeyCode};
 use macroquad::prelude::draw_rectangle;
 use macroquad::shapes::draw_circle;
 use macroquad::text::draw_text;
 use macroquad::time::get_frame_time;
 use macroquad::window::{clear_background, next_frame, screen_height, screen_width};
+use functionals::actions;
+
 #[macroquad::main("BasicShapes")]
 async fn main() {
     let gamestate = &mut GameState::new(screen_width(), screen_height());
