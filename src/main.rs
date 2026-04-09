@@ -40,7 +40,7 @@ fn handle_inputs(state: &mut GameState, delta: f32) {
         actions::do_d(&mut state.player, delta)
     }
     if is_key_down(KeyCode::Space) {
-        actions::do_space(state, delta)
+        actions::do_space(state)
     }
 }
 

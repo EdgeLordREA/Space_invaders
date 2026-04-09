@@ -1,7 +1,5 @@
-use macroquad::math::Vec2;
-use macroquad::window::{screen_height, screen_width};
-use crate::gamestate::GameState;
 use crate::objects::bullet::{Bullet, Source};
+use macroquad::math::Vec2;
 
 pub struct Player
 {
