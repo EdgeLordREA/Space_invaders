@@ -1,18 +1,21 @@
 use macroquad::math::{Vec2};
-use macroquad::prelude::pop_camera_state;
 
 pub struct Bullet {
     position : Vec2,
+    pub dimensions : Vec2,
     speed: Vec2,
-    source: Source
+    source: Source,
+    damage : f32
 }
 
 impl Bullet {
-    pub fn new(position : Vec2, speed: Vec2, source: Source) -> Bullet {
+    pub fn new(position : Vec2, dimensions : Vec2, speed: Vec2, source: Source, damage : f32) -> Bullet {
         Bullet{
             position,
+            dimensions,
             speed,
             source,
+            damage
         }
     }    
     pub fn move_bullet(&mut self, delta : f32)

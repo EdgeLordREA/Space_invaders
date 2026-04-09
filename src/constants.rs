@@ -1,1 +1,1 @@
-pub const ENEMY_LINE_HEIGHT: f32 = 10.0;
+pub const ENEMY_LINE_HEIGHT : f32 = 100.0;
