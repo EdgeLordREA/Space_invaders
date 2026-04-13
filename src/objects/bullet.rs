@@ -1,3 +1,4 @@
+use std::ops::Mul;
 use crate::functionals::math::Vec2;
 
 pub struct Bullet {

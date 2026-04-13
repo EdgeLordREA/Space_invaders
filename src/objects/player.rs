@@ -1,5 +1,5 @@
 use crate::objects::bullet::{Bullet, Source};
-use macroquad::math::Vec2;
+use crate::functionals::math::Vec2;
 
 pub struct Player
 {
