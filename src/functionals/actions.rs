@@ -13,7 +13,7 @@ use macroquad::prelude::{screen_height, screen_width};
 /// * `player` - Mutable reference to the player to move
 /// * `delta` - Time elapsed since last frame for delta-time movement
 pub fn do_w(player: &mut Player, delta: f32) {
-    player.position.y = clamp(player.position.y-player.speed * delta, 0.0, screen_height());
+    player.shape.y = clamp(player.shape.y-player.speed * delta, 0.0, screen_height());
 }
 
 /// Moves the player leftward (A key).
@@ -22,7 +22,7 @@ pub fn do_w(player: &mut Player, delta: f32) {
 /// * `player` - Mutable reference to the player to move
 /// * `delta` - Time elapsed since last frame for delta-time movement
 pub fn do_a(player: &mut Player, delta: f32) {
-    player.position.x = clamp(player.position.x-player.speed * delta, 0.0, screen_width());
+    player.shape.x = clamp(player.shape.x-player.speed * delta, 0.0, screen_width());
 }
 
 /// Moves the player downward (S key).
@@ -31,7 +31,7 @@ pub fn do_a(player: &mut Player, delta: f32) {
 /// * `player` - Mutable reference to the player to move
 /// * `delta` - Time elapsed since last frame for delta-time movement
 pub fn do_s(player: &mut Player, delta: f32) {
-    player.position.y = clamp(player.position.y + player.speed * delta, 0.0, screen_height()-player.dimensions.y);
+    player.shape.y = clamp(player.shape.y + player.speed * delta, 0.0, screen_height()-player.shape.h);
 }
 
 /// Moves the player rightward (D key).
@@ -40,7 +40,7 @@ pub fn do_s(player: &mut Player, delta: f32) {
 /// * `player` - Mutable reference to the player to move
 /// * `delta` - Time elapsed since last frame for delta-time movement
 pub fn do_d(player: &mut Player, delta: f32) {
-    player.position.x = clamp(player.position.x + player.speed * delta, 0.0, screen_width() - player.dimensions.x);
+    player.shape.x = clamp(player.shape.x + player.speed * delta, 0.0, screen_width() - player.shape.w);
 }
 
 /// Handles the player's attack action (Space key).

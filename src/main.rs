@@ -66,10 +66,10 @@ fn handle_inputs(state: &mut GameState, delta: f32) {
 /// Draws the player as a blue rectangle, bullets as red circles,
 /// and displays the bullet count in the top-left corner.
 fn render_gamestate(gamestate: &GameState) {
-    let player_pos = gamestate.player.position();
 
     clear_background(BLACK);
-    draw_rectangle(player_pos.x, player_pos.y, gamestate.player.dimensions.x, gamestate.player.dimensions.y, BLUE);
+    let player_rect = gamestate.player.shape;
+    draw_rectangle(player_rect.x, player_rect.y, player_rect.w, player_rect.h, BLUE);
     draw_text(
         &format!("{}", gamestate.bullets.len()),
         10.0,
