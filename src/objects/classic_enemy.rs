@@ -4,7 +4,7 @@
 /// with movement patterns and health management.
 
 use serde::Deserialize;
-use crate::functionals::math::Vec2;
+use crate::functionals::vec2::Vec2;
 
 /// A basic enemy type that moves in a bouncing pattern.
 /// 

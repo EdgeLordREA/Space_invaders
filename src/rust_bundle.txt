@@ -1,0 +1,400 @@
+========================================
+FILE: ./functionals/config.rs
+========================================
+
+pub struct Config
+{
+    pub screen_width : f32,
+    pub screen_height: f32,
+}
+
+========================================
+FILE: ./functionals/math.rs
+========================================
+
+use macroquad::math::Vec2;
+
+pub fn between(left: f32, right: f32, top: f32, bottom: f32, loc : Vec2) -> bool {
+    let horizontal = loc.x >= left && loc.x < right;
+    let vertical = loc.y >= top && loc.y < bottom;
+    horizontal && vertical
+}
+
+========================================
+FILE: ./functionals/waveloader.rs
+========================================
+
+use crate::objects::wave::Wave;
+
+pub fn load_waves() -> Vec<Wave>
+{
+    
+}
+
+========================================
+FILE: ./functionals/actions.rs
+========================================
+
+use crate::gamestate::GameState;
+use crate::objects::player::Player;
+
+pub fn do_w(player: &mut Player, delta: f32) {
+    player.position.y -= player.speed * delta;
+}
+pub fn do_a(player: &mut Player, delta: f32) {
+    player.position.x -= player.speed * delta;
+}
+
+pub fn do_s(player: &mut Player, delta: f32) {
+    player.position.y += player.speed * delta;
+}
+
+pub fn do_d(player: &mut Player, delta: f32) {
+    player.position.x += player.speed * delta;
+}
+
+pub fn do_space(game_state : &mut GameState) {
+    if game_state.player.can_attack() {
+        game_state.player.attack(&mut game_state.bullets)
+    }
+}
+
+
+========================================
+FILE: ./functionals/mod.rs
+========================================
+
+pub mod actions;
+pub mod config;
+pub mod math;
+pub mod waveloader;
+
+========================================
+FILE: ./objects/wave.rs
+========================================
+
+use crate::objects::classic_enemy::ClassicEnemy;
+
+pub(crate) struct Wave{
+    enemies : Vec<ClassicEnemy>,
+    max_enemies : i32,
+    max_duration : f32,
+}
+
+========================================
+FILE: ./objects/player.rs
+========================================
+
+use crate::objects::bullet::{Bullet, Source};
+use macroquad::math::Vec2;
+
+pub struct Player
+{
+    pub position : Vec2,
+    pub dimensions : Vec2,
+    pub speed: f32,
+    atk_speed: f32,
+    pub atk_cooldown : f32,
+    bullet_speed : Vec2,
+    bullet_size : Vec2,
+    bullet_damage: f32,
+}
+impl Player
+{
+    pub fn can_attack(&self) -> bool
+        {
+            self.atk_cooldown < 0.0
+        }
+
+    pub fn attack(&mut self,  bullets : &mut Vec<Bullet>)
+    {
+        self.atk_cooldown = 1.0 / self.atk_speed;
+        let damage = self.calculate_damage();
+        let x_offset = self.dimensions / 2.0;
+        let bullet = Bullet::new(self.position + x_offset,self.bullet_size, self.bullet_speed, Source::Player, damage);
+        bullets.push(bullet);
+    }
+
+    pub fn calculate_damage(&self) -> f32
+    {
+        self.bullet_damage
+    }
+    pub fn run_player(&mut self, delta : f32)
+    {
+        self.atk_cooldown -= delta;
+    }
+
+    pub fn new(screen_width : f32, screen_height : f32) -> Player {
+        Player {
+            position: Vec2::new(screen_width/2.0, screen_height-10.0), // Start at the origin
+            dimensions: Vec2::new(30.0, 20.0), //size of player
+            speed: 200.0,                  // Base movement speed
+            atk_speed: 8.0,                // 1 attack per second
+            atk_cooldown: 0.0,             // Ready to attack immediately
+            bullet_damage: 10.0,                     // Base damage
+            bullet_speed: Vec2::new(0.0, -100.0), // speed and direction of bullet
+            bullet_size: Vec2::new(4.0, 4.0), // size of bullet
+        }
+    }
+    pub fn position(&self) -> Vec2
+    {
+        self.position
+    }
+}
+
+========================================
+FILE: ./objects/bullet.rs
+========================================
+
+use macroquad::math::{Vec2};
+
+pub struct Bullet {
+    position : Vec2,
+    pub dimensions : Vec2,
+    speed: Vec2,
+    source: Source,
+    damage : f32
+}
+
+impl Bullet {
+    pub fn new(position : Vec2, dimensions : Vec2, speed: Vec2, source: Source, damage : f32) -> Bullet {
+        Bullet{
+            position,
+            dimensions,
+            speed,
+            source,
+            damage
+        }
+    }    
+    pub fn move_bullet(&mut self, delta : f32)
+    {
+        self.position += self.speed * delta;
+    }
+    
+    pub fn get_position(&self) -> Vec2 {
+        self.position
+    }
+}
+
+pub enum Source{
+    Player,
+    Enemy
+}
+
+========================================
+FILE: ./objects/classic_enemy.rs
+========================================
+
+use macroquad::math::{vec2, Vec2};
+
+pub struct ClassicEnemy
+{
+    health : f32,
+    speed : f32,
+    position: Vec2,
+    dir : Direction,
+    size: Vec2,
+}
+
+enum Direction {
+    Left,
+    Right,
+}
+impl ClassicEnemy
+{
+    pub fn r#move(&mut self, width : f32)
+    {
+        if let Direction::Right = self.dir
+        {
+            self.position.x = self.position.x + self.speed;
+            if self.position.x > width + self.size.x
+            {
+                self.position.x = width + self.size.x;
+                self.dir = Direction::Left;
+                self.position.y += crate::constants::ENEMY_LINE_HEIGHT;
+            }
+        }
+        if let Direction::Left = self.dir
+        {
+            self.position.x = self.position.x - self.speed;
+            if self.position.x < 0.0
+            {
+                self.position.x = 0.0;
+                self.dir = Direction::Right;
+                self.position.y += crate::constants::ENEMY_LINE_HEIGHT;
+            }
+        }
+    }
+
+    ///Allows you to deal damage to this enemy.
+    ///
+    ///Returns true if enemy is killed, and false if still alive.
+    pub fn take_damage(&mut self, damage : f32) -> bool
+    {
+        self.health -= damage;
+        if self.health < 0.0 {
+            true
+        }
+        else
+        {
+            false
+        }
+
+    }
+
+}
+
+========================================
+FILE: ./objects/mod.rs
+========================================
+
+pub mod player;
+pub mod bullet;
+pub mod classic_enemy;
+pub mod wave;
+
+========================================
+FILE: ./managers/wavemanager.rs
+========================================
+
+use crate::objects::wave;
+struct WaveManager {
+    waves : Vec<wave::Wave>,
+    current_wave: i32,
+    max_enemies: i32,
+    current_enemies: i32,
+    spawn_delay : f32,
+    pub wave_state : WaveState
+}
+pub enum WaveState {
+    Spawning,
+    InProgress,
+    Transitioning,
+}
+impl WaveManager {}
+
+========================================
+FILE: ./managers/mod.rs
+========================================
+
+pub mod wavemanager;
+
+========================================
+FILE: ./main.rs
+========================================
+
+pub mod gamestate;
+mod objects;
+pub mod constants;
+pub mod managers;
+pub mod functionals;
+
+use crate::gamestate::GameState;
+use macroquad::color::*;
+use macroquad::input::{is_key_down, KeyCode};
+use macroquad::prelude::draw_rectangle;
+use macroquad::shapes::draw_circle;
+use macroquad::text::draw_text;
+use macroquad::time::get_frame_time;
+use macroquad::window::{clear_background, next_frame, screen_height, screen_width};
+use functionals::actions;
+
+#[macroquad::main("BasicShapes")]
+async fn main() {
+    let gamestate = &mut GameState::new(screen_width(), screen_height());
+
+    loop {
+        let delta = get_frame_time();
+        handle_inputs(gamestate, delta);
+        gamestate.run_state(delta);
+        render_gamestate(gamestate);
+        next_frame().await
+    }
+}
+
+fn handle_inputs(state: &mut GameState, delta: f32) {
+    if is_key_down(KeyCode::W) {
+        actions::do_w(&mut state.player, delta)
+    }
+    if is_key_down(KeyCode::A) {
+        actions::do_a(&mut state.player, delta)
+    }
+    if is_key_down(KeyCode::S) {
+        actions::do_s(&mut state.player, delta)
+    }
+    if is_key_down(KeyCode::D) {
+        actions::do_d(&mut state.player, delta)
+    }
+    if is_key_down(KeyCode::Space) {
+        actions::do_space(state)
+    }
+}
+
+fn render_gamestate(gamestate: &GameState) {
+    let player_pos = gamestate.player.position();
+
+    clear_background(BLACK);
+    draw_rectangle(player_pos.x, player_pos.y, gamestate.player.dimensions.x, gamestate.player.dimensions.y, BLUE);
+    draw_text(
+        &format!("{}", gamestate.bullets.len()),
+        10.0,
+        10.0,
+        20.0,
+        RED,
+    );
+
+    for x in &gamestate.bullets {
+        let pos = x.get_position();
+        draw_circle(pos.x, pos.y, x.dimensions.x, RED);
+
+    }
+}
+
+
+========================================
+FILE: ./gamestate.rs
+========================================
+
+use crate::functionals::config::Config;
+use crate::functionals::math;
+use crate::objects::*;
+use crate::objects::player::Player;
+
+pub struct GameState
+{
+    pub player : player::Player,
+    pub bullets : Vec<bullet::Bullet>,
+    pub enemies : Vec<classic_enemy::ClassicEnemy>,
+    pub config : Config,
+}
+
+impl GameState {
+    pub fn new(screen_width : f32, screen_height : f32) -> GameState {
+        let bullets : Vec<bullet::Bullet> = Vec::new();
+        let enemies : Vec<classic_enemy::ClassicEnemy> = Vec::new();
+        let config = Config{screen_width, screen_height};
+        let player = Player::new(config.screen_width, config.screen_height);
+        GameState{
+            player,
+            bullets,
+            enemies,
+            config,
+        }
+    }
+
+    pub fn run_state(&mut self, delta : f32)
+    {
+        for bullet in self.bullets.iter_mut(){
+            bullet.move_bullet(delta);
+        }
+        self.bullets.retain(|b| math::between(0.0, self.config.screen_width, 0.0, self.config.screen_height, b.get_position()));
+        self.player.run_player(delta);
+    }
+}
+
+========================================
+FILE: ./constants.rs
+========================================
+
+pub const ENEMY_LINE_HEIGHT : f32 = 100.0;
+

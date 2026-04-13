@@ -4,7 +4,7 @@
 /// the player character, including movement, combat, and state management.
 
 use crate::objects::bullet::{Bullet, Source};
-use crate::functionals::math::Vec2;
+use crate::functionals::vec2::Vec2;
 
 /// The player-controlled character in the game.
 /// 

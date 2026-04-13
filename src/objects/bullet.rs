@@ -4,7 +4,7 @@
 /// projectiles fired by players and enemies.
 
 use std::ops::Mul;
-use crate::functionals::math::Vec2;
+use crate::functionals::vec2::Vec2;
 
 /// A projectile entity in the game world.
 /// 

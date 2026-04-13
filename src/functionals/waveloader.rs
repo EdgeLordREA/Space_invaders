@@ -12,7 +12,7 @@ use crate::objects::wave::Wave;
 /// 
 /// # Note
 /// Currently unimplemented - placeholder for future wave loading functionality.
-// pub fn load_waves() -> Vec<Wave>
-// {
-//     
-// }
+pub fn load_waves() -> Vec<Wave>
+{
+    todo!()
+}

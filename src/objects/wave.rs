@@ -1,7 +1,7 @@
-/// Wave module.
-/// 
-/// Contains the Wave struct for managing groups of enemies
-/// that appear together during gameplay.
+//! Wave module.
+//!
+//! Contains the Wave struct for managing groups of enemies
+//! that appear together during gameplay.
 
 use serde::Deserialize;
 use crate::objects::classic_enemy::ClassicEnemy;
@@ -10,7 +10,7 @@ use crate::objects::classic_enemy::ClassicEnemy;
 /// 
 /// Contains a collection of enemies and wave configuration parameters.
 #[derive(Debug, Deserialize)]
-pub(crate) struct Wave{
+pub struct Wave{
     /// Collection of enemies in this wave
     enemies : Vec<ClassicEnemy>,
     /// Maximum number of enemies allowed in this wave
