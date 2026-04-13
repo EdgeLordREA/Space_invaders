@@ -14,6 +14,12 @@ use macroquad::time::get_frame_time;
 use macroquad::window::{clear_background, next_frame, screen_height, screen_width};
 use functionals::actions;
 
+/// Main entry point for the game application.
+/// 
+/// Initializes the game state and runs the main game loop, which handles:
+/// - Processing user input
+/// - Updating game state
+/// - Rendering graphics
 #[macroquad::main("BasicShapes")]
 async fn main() {
     let gamestate = &mut GameState::new(screen_width(), screen_height());
@@ -27,6 +33,13 @@ async fn main() {
     }
 }
 
+/// Handles player input and updates the game state accordingly.
+/// 
+/// # Arguments
+/// * `state` - Mutable reference to the current GameState
+/// * `delta` - Time elapsed since the last frame (used for delta-time movement)
+/// 
+/// Maps WASD keys to player movement directions and Space to shooting.
 fn handle_inputs(state: &mut GameState, delta: f32) {
     if is_key_down(KeyCode::W) {
         actions::do_w(&mut state.player, delta)
@@ -45,6 +58,13 @@ fn handle_inputs(state: &mut GameState, delta: f32) {
     }
 }
 
+/// Renders the current game state to the screen.
+/// 
+/// # Arguments
+/// * `gamestate` - Reference to the current GameState to render
+/// 
+/// Draws the player as a blue rectangle, bullets as red circles,
+/// and displays the bullet count in the top-left corner.
 fn render_gamestate(gamestate: &GameState) {
     let player_pos = gamestate.player.position();
 
