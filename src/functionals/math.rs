@@ -1,3 +1,4 @@
+use macroquad::math::Rect;
 use crate::functionals::vec2::Vec2;
 
 /// Mathematical utilities and vector operations.
@@ -21,4 +22,3 @@ pub fn between(left: f32, right: f32, top: f32, bottom: f32, loc : Vec2) -> bool
     let vertical = loc.y >= top && loc.y < bottom;
     horizontal && vertical
 }
-

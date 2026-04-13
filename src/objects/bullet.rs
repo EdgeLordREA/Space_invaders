@@ -4,16 +4,17 @@
 /// projectiles fired by players and enemies.
 
 use std::ops::Mul;
+use macroquad::math::Rect;
 use crate::functionals::vec2::Vec2;
 
 /// A projectile entity in the game world.
 /// 
-/// Represents a bullet with position, dimensions, velocity, source, and damage.
+/// Represents a bullet with position, radius, velocity, source, and damage.
 pub struct Bullet {
     /// Current position of the bullet
     position : Vec2,
-    /// Width and height dimensions of the bullet
-    pub dimensions : Vec2,
+    /// Radius of the bullet
+    radius : f32,
     /// Velocity vector determining movement direction and speed
     speed: Vec2,
     /// The source that fired this bullet (player or enemy)
@@ -27,14 +28,14 @@ impl Bullet {
     /// 
     /// # Arguments
     /// * `position` - Initial position of the bullet
-    /// * `dimensions` - Size of the bullet
+    /// * `radius` - Radius of the bullet
     /// * `speed` - Velocity vector for movement
     /// * `source` - Entity that fired the bullet
     /// * `damage` - Damage value to deal on hit
-    pub fn new(position : Vec2, dimensions : Vec2, speed: Vec2, source: Source, damage : f32) -> Bullet {
+    pub fn new(position : Vec2, radius : f32, speed: Vec2, source: Source, damage : f32) -> Bullet {
         Bullet{
             position,
-            dimensions,
+            radius,
             speed,
             source,
             damage
@@ -56,6 +57,11 @@ impl Bullet {
     /// A copy of the bullet's current position vector.
     pub fn get_position(&self) -> Vec2 {
         self.position
+    }
+
+    pub fn collides_with_rect(self, rect: Rect) -> bool
+    {
+        let closestpoint = self.
     }
 }
 
