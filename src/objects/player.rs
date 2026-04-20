@@ -23,9 +23,10 @@ pub struct Player
     /// Velocity vector for spawned bullets
     bullet_speed : Vec2,
     /// Dimensions of spawned bullets
-    bullet_size : Vec2,
+    bullet_radius: f32,
     /// Damage dealt by player's bullets
     bullet_damage: f32,
+    bullet_pen : i32
 }
 impl Player
 {
@@ -50,7 +51,7 @@ impl Player
         let damage = self.calculate_damage();
         let center = self.shape.center();
         let origin = Vec2::new(center.x , center.y);
-        let bullet = Bullet::new(origin,self.bullet_size, self.bullet_speed, Source::Player, damage);
+        let bullet = Bullet::new(origin, self.bullet_radius, self.bullet_speed, Source::Player, damage, self.bullet_pen);
         bullets.push(bullet);
     }
 
@@ -90,7 +91,8 @@ impl Player
             atk_cooldown: 0.0,             // Ready to attack immediately
             bullet_damage: 10.0,                     // Base damage
             bullet_speed: Vec2::new(0.0, -100.0), // speed and direction of bullet
-            bullet_size: Vec2::new(4.0, 4.0), // size of bullet
+            bullet_radius: 4.0, // size of bullet
+            bullet_pen : 1, //number of enemies the bullet is allowed to hit
         }
     }
     

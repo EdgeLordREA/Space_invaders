@@ -1,9 +1,11 @@
+
 /// Classic Enemy module.
 /// 
 /// Contains the ClassicEnemy struct representing a basic enemy type
 /// with movement patterns and health management.
 
 use serde::Deserialize;
+use crate::functionals::rect::Rect;
 use crate::functionals::vec2::Vec2;
 
 /// A basic enemy type that moves in a bouncing pattern.
@@ -13,15 +15,14 @@ use crate::functionals::vec2::Vec2;
 pub struct ClassicEnemy
 {
     /// Current health of the enemy
-    health : f32,
+    pub(crate) health : f32,
     /// Movement speed in pixels per second
     speed : f32,
     /// Current position in world coordinates
-    position: Vec2,
+    pub shape : Rect,
     /// Current horizontal movement direction
     dir : Direction,
-    /// Width and height dimensions of the enemy
-    size: Vec2,
+    pub instance : i32
 }
 
 /// Horizontal movement direction for enemies.
@@ -45,22 +46,22 @@ impl ClassicEnemy
     {
         if let Direction::Right = self.dir
         {
-            self.position.x = self.position.x + self.speed;
-            if self.position.x > width + self.size.x
+            self.shape.x = self.shape.x + self.speed;
+            if self.shape.x > width + self.shape.w
             {
-                self.position.x = width + self.size.x;
+                self.shape.x = width + self.shape.w;
                 self.dir = Direction::Left;
-                self.position.y += crate::constants::ENEMY_LINE_HEIGHT;
+                self.shape.y += crate::constants::ENEMY_LINE_HEIGHT;
             }
         }
         if let Direction::Left = self.dir
         {
-            self.position.x = self.position.x - self.speed;
-            if self.position.x < 0.0
+            self.shape.x = self.shape.x - self.speed;
+            if self.shape.x < 0.0
             {
-                self.position.x = 0.0;
+                self.shape.x = 0.0;
                 self.dir = Direction::Right;
-                self.position.y += crate::constants::ENEMY_LINE_HEIGHT;
+                self.shape.y += crate::constants::ENEMY_LINE_HEIGHT;
             }
         }
     }

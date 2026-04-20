@@ -80,7 +80,7 @@ fn render_gamestate(gamestate: &GameState) {
 
     for x in &gamestate.bullets {
         let pos = x.get_position();
-        draw_circle(pos.x, pos.y, x.dimensions.x, RED);
+        draw_circle(pos.x, pos.y, x.radius, RED);
 
     }
 }

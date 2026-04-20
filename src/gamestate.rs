@@ -16,6 +16,7 @@ pub struct GameState
     pub enemies : Vec<classic_enemy::ClassicEnemy>,
     /// Game configuration including screen dimensions
     pub config : Config,
+    enemy_instance_count: i32
 }
 
 impl GameState {
@@ -33,11 +34,13 @@ impl GameState {
         let enemies : Vec<classic_enemy::ClassicEnemy> = Vec::new();
         let config = Config{screen_width, screen_height};
         let player = Player::new(config.screen_width, config.screen_height);
+        let enemy_instance_count = 0;
         GameState{
             player,
             bullets,
             enemies,
             config,
+            enemy_instance_count
         }
     }
 
@@ -54,8 +57,20 @@ impl GameState {
     {
         for bullet in self.bullets.iter_mut(){
             bullet.move_bullet(delta);
+            for enemy in self.enemies.iter_mut(){
+                if bullet.collides_with_rect(enemy.shape)
+                {
+                    if !bullet.has_hit(enemy.instance) {
+                        bullet.register_hit(enemy.instance);
+                        enemy.take_damage(bullet.damage);
+                        break;
+                    }
+                }
+
+            }
         }
-        self.bullets.retain(|b| math::between(0.0, self.config.screen_width, 0.0, self.config.screen_height, b.get_position()));
+        self.enemies.retain(|e| e.health > 0.0);
+        self.bullets.retain(|b| math::between(0.0, self.config.screen_width, 0.0, self.config.screen_height, b.get_position()) && b.penetration > 0);
         self.player.run_player(delta);
     }
 }
