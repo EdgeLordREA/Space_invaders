@@ -27,7 +27,7 @@ pub struct ClassicEnemy
 
 /// Horizontal movement direction for enemies.
 #[derive(Debug, Deserialize)]
-enum Direction {
+pub enum Direction {
     /// Moving towards the left side of the screen
     Left,
     /// Moving towards the right side of the screen
@@ -35,6 +35,17 @@ enum Direction {
 }
 impl ClassicEnemy
 {
+    pub fn new(health : f32, speed : f32, position : Vec2, Size : Vec2, direction: Direction, instance : i32) -> ClassicEnemy
+    {
+        ClassicEnemy{
+            health,
+            speed,
+            shape : Rect::new(position.x, position.y, Size.x, Size.y),
+            dir : direction,
+            instance
+        }
+    }
+
     /// Moves the enemy based on its current direction.
     /// 
     /// # Arguments
@@ -47,9 +58,9 @@ impl ClassicEnemy
         if let Direction::Right = self.dir
         {
             self.shape.x = self.shape.x + self.speed;
-            if self.shape.x > width + self.shape.w
+            if self.shape.x > width - self.shape.w
             {
-                self.shape.x = width + self.shape.w;
+                self.shape.x = width - self.shape.w;
                 self.dir = Direction::Left;
                 self.shape.y += crate::constants::ENEMY_LINE_HEIGHT;
             }

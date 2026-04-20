@@ -67,4 +67,8 @@ impl Rect {
         let closest_y = point.y.clamp(self.y, self.y + self.h);
         Vec2::new(closest_x, closest_y)
     }
+    
+    pub fn top_left(&self) -> Vec2 {
+        Vec2::new(self.x, self.y)
+    }
 }

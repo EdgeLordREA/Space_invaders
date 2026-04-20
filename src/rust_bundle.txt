@@ -2,9 +2,19 @@
 FILE: ./functionals/config.rs
 ========================================
 
+/// Game configuration settings.
+/// 
+/// This module contains the Config struct for storing
+/// game-wide configuration parameters.
+
+/// Configuration structure for game settings.
+/// 
+/// Contains screen dimensions and other configurable parameters.
 pub struct Config
 {
+    /// Width of the game screen in pixels
     pub screen_width : f32,
+    /// Height of the game screen in pixels
     pub screen_height: f32,
 }
 
@@ -12,8 +22,25 @@ pub struct Config
 FILE: ./functionals/math.rs
 ========================================
 
-use macroquad::math::Vec2;
+use macroquad::math::Rect;
+use crate::functionals::vec2::Vec2;
 
+/// Mathematical utilities and vector operations.
+/// 
+/// This module provides mathematical helper functions
+/// for game calculations including collision detection, movement, and physics.
+
+/// Checks if a 2D point is within the specified rectangular bounds.
+/// 
+/// # Arguments
+/// * `left` - Left boundary of the rectangle
+/// * `right` - Right boundary of the rectangle
+/// * `top` - Top boundary of the rectangle
+/// * `bottom` - Bottom boundary of the rectangle
+/// * `loc` - The 2D point to check
+/// 
+/// # Returns
+/// `true` if the point is within bounds (inclusive on left/top, exclusive on right/bottom)
 pub fn between(left: f32, right: f32, top: f32, bottom: f32, loc : Vec2) -> bool {
     let horizontal = loc.x >= left && loc.x < right;
     let vertical = loc.y >= top && loc.y < bottom;
@@ -21,39 +48,163 @@ pub fn between(left: f32, right: f32, top: f32, bottom: f32, loc : Vec2) -> bool
 }
 
 ========================================
+FILE: ./functionals/rect.rs
+========================================
+
+use serde::Deserialize;
+// Assuming Vec2 is in your crate
+use crate::functionals::vec2::Vec2;
+
+#[derive(Debug, Deserialize, Clone, Copy, PartialEq)]
+pub struct Rect {
+    pub x: f32,
+    pub y: f32,
+    pub w: f32,
+    pub h: f32,
+}
+
+impl Rect {
+    pub fn new(x: f32, y: f32, w: f32, h: f32) -> Self {
+        Self { x, y, w, h }
+    }
+
+    /// Creates a rectangle from a top-left point and a size vector
+    pub fn from_vecs(pos: Vec2, size: Vec2) -> Self {
+        Self {
+            x: pos.x,
+            y: pos.y,
+            w: size.x,
+            h: size.y,
+        }
+    }
+
+    pub fn center(self) -> Vec2 {
+        Vec2::new(self.x + self.w / 2.0, self.y + self.h / 2.0)
+    }
+
+    // --- Helpers for cleaner collision math ---
+
+    pub fn left(self) -> f32 { self.x }
+    pub fn right(self) -> f32 { self.x + self.w }
+    pub fn top(self) -> f32 { self.y }
+    pub fn bottom(self) -> f32 { self.y + self.h }
+
+    // --- Point Queries ---
+
+    pub fn contains(self, point: Vec2) -> bool {
+        point.x >= self.left() &&
+            point.x <= self.right() &&
+            point.y >= self.top() &&
+            point.y <= self.bottom()
+    }
+
+    pub fn intersects(self, other: Rect) -> bool {
+        self.left() < other.right() &&
+            self.right() > other.left() &&
+            self.top() < other.bottom() &&
+            self.bottom() > other.top()
+    }
+
+    /// Returns a new Rect expanded by a padding value on all sides
+    pub fn inflate(self, amount: f32) -> Self {
+        Self {
+            x: self.x - amount,
+            y: self.y - amount,
+            w: self.w + amount * 2.0,
+            h: self.h + amount * 2.0,
+        }
+    }
+
+    pub fn get_closest_point(self, point: Vec2) -> Vec2 {
+        let closest_x = point.x.clamp(self.x, self.x + self.w);
+        let closest_y = point.y.clamp(self.y, self.y + self.h);
+        Vec2::new(closest_x, closest_y)
+    }
+    
+    pub fn top_left(&self) -> Vec2 {
+        Vec2::new(self.x, self.y)
+    }
+}
+
+========================================
 FILE: ./functionals/waveloader.rs
 ========================================
 
+/// Wave loading utilities.
+/// 
+/// This module provides functionality for loading and managing
+/// enemy wave configurations from external sources.
+
 use crate::objects::wave::Wave;
 
+/// Loads all wave configurations for the game.
+/// 
+/// # Returns
+/// A vector of Wave objects representing all enemy waves.
+/// 
+/// # Note
+/// Currently unimplemented - placeholder for future wave loading functionality.
 pub fn load_waves() -> Vec<Wave>
 {
-    
+    todo!()
 }
 
 ========================================
 FILE: ./functionals/actions.rs
 ========================================
 
+/// Player movement and action handlers.
+///
+/// This module provides functions to handle keyboard input
+/// and translate it into player actions.
 use crate::gamestate::GameState;
 use crate::objects::player::Player;
+use macroquad::math::clamp;
+use macroquad::prelude::{screen_height, screen_width};
 
+/// Moves the player upward (W key).
+///
+/// # Arguments
+/// * `player` - Mutable reference to the player to move
+/// * `delta` - Time elapsed since last frame for delta-time movement
 pub fn do_w(player: &mut Player, delta: f32) {
-    player.position.y -= player.speed * delta;
+    player.shape.y = clamp(player.shape.y-player.speed * delta, 0.0, screen_height());
 }
+
+/// Moves the player leftward (A key).
+///
+/// # Arguments
+/// * `player` - Mutable reference to the player to move
+/// * `delta` - Time elapsed since last frame for delta-time movement
 pub fn do_a(player: &mut Player, delta: f32) {
-    player.position.x -= player.speed * delta;
+    player.shape.x = clamp(player.shape.x-player.speed * delta, 0.0, screen_width());
 }
 
+/// Moves the player downward (S key).
+///
+/// # Arguments
+/// * `player` - Mutable reference to the player to move
+/// * `delta` - Time elapsed since last frame for delta-time movement
 pub fn do_s(player: &mut Player, delta: f32) {
-    player.position.y += player.speed * delta;
+    player.shape.y = clamp(player.shape.y + player.speed * delta, 0.0, screen_height()-player.shape.h);
 }
 
+/// Moves the player rightward (D key).
+///
+/// # Arguments
+/// * `player` - Mutable reference to the player to move
+/// * `delta` - Time elapsed since last frame for delta-time movement
 pub fn do_d(player: &mut Player, delta: f32) {
-    player.position.x += player.speed * delta;
+    player.shape.x = clamp(player.shape.x + player.speed * delta, 0.0, screen_width() - player.shape.w);
 }
 
-pub fn do_space(game_state : &mut GameState) {
+/// Handles the player's attack action (Space key).
+///
+/// # Arguments
+/// * `game_state` - Mutable reference to the current GameState
+///
+/// Creates a new bullet if the player's attack cooldown has expired.
+pub fn do_space(game_state: &mut GameState) {
     if game_state.player.can_attack() {
         game_state.player.attack(&mut game_state.bullets)
     }
@@ -68,16 +219,216 @@ pub mod actions;
 pub mod config;
 pub mod math;
 pub mod waveloader;
+pub mod vec2;
+pub mod rect;
+
+========================================
+FILE: ./functionals/vec2.rs
+========================================
+
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use serde::Deserialize;
+
+/// A 2D vector type for representing positions, velocities, and dimensions.
+///
+/// Supports common vector operations including addition, subtraction,
+/// scalar multiplication/division, dot product, and normalization.
+#[derive(Debug, Deserialize, Clone, Copy, PartialEq)]
+pub struct Vec2
+{
+    /// X component of the vector
+    pub x: f32,
+    /// Y component of the vector
+    pub y: f32,
+}
+
+impl Vec2 {
+    /// Creates a new Vec2 with the specified components.
+    ///
+    /// # Arguments
+    /// * `x` - X component value
+    /// * `y` - Y component value
+    pub fn new(x: f32, y: f32) -> Self {
+        Vec2 { x, y }
+    }
+
+    /// Calculates the squared length (magnitude) of the vector.
+    ///
+    /// # Returns
+    /// The squared length (x² + y²), useful for avoiding expensive square root operations.
+    pub fn length_squared(&self) -> f32 {
+        self.x * self.x + self.y * self.y
+    }
+
+    /// Calculates the length (magnitude) of the vector.
+    ///
+    /// # Returns
+    /// The Euclidean length of the vector.
+    pub fn length(&self) -> f32 {
+        self.length_squared().sqrt()
+    }
+
+    /// Returns a normalized (unit length) version of this vector.
+    ///
+    /// # Returns
+    /// A vector with the same direction but length of 1, or the original vector if length is 0.
+    pub fn normalize(&self) -> Vec2 {
+        let len = self.length();
+        if len > 0.0 {
+            Vec2 {
+                x: self.x / len,
+                y: self.y / len,
+            }
+        } else {
+            *self
+        }
+    }
+
+    /// Calculates the dot product with another vector.
+    ///
+    /// # Arguments
+    /// * `other` - The other vector to compute dot product with
+    ///
+    /// # Returns
+    /// The scalar dot product value.
+    pub fn dot(&self, other: &Vec2) -> f32 {
+        self.x * other.x + self.y * other.y
+    }
+
+    /// Calculates the distance to another point.
+    ///
+    /// # Arguments
+    /// * `other` - The other point to measure distance to
+    ///
+    /// # Returns
+    /// The Euclidean distance between this point and the other.
+    pub fn distance(&self, other: &Vec2) -> f32 {
+        (*self - *other).length()
+    }
+}
+
+impl Default for Vec2 {
+    /// Creates a zero vector (0, 0).
+    fn default() -> Self {
+        Vec2 { x: 0.0, y: 0.0 }
+    }
+}
+
+impl Add for Vec2 {
+    type Output = Vec2;
+
+    /// Adds two vectors component-wise.
+    fn add(self, other: Vec2) -> Vec2 {
+        Vec2 {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+
+impl Sub for Vec2 {
+    type Output = Vec2;
+
+    /// Subtracts two vectors component-wise.
+    fn sub(self, other: Vec2) -> Vec2 {
+        Vec2 {
+            x: self.x - other.x,
+            y: self.y - other.y,
+        }
+    }
+}
+
+impl Mul<f32> for Vec2 {
+    type Output = Vec2;
+
+    /// Multiplies vector by a scalar.
+    fn mul(self, scalar: f32) -> Vec2 {
+        Vec2 {
+            x: self.x * scalar,
+            y: self.y * scalar,
+        }
+    }
+}
+
+impl Div<f32> for Vec2 {
+    type Output = Vec2;
+
+    /// Divides vector by a scalar.
+    fn div(self, scalar: f32) -> Vec2 {
+        Vec2 {
+            x: self.x / scalar,
+            y: self.y / scalar,
+        }
+    }
+}
+
+impl Neg for Vec2 {
+    type Output = Vec2;
+
+    /// Negates both components of the vector.
+    fn neg(self) -> Vec2 {
+        Vec2 {
+            x: -self.x,
+            y: -self.y,
+        }
+    }
+}
+
+impl AddAssign for Vec2 {
+    /// Adds another vector to this vector in-place.
+    fn add_assign(&mut self, other: Vec2) {
+        self.x += other.x;
+        self.y += other.y;
+    }
+}
+
+impl SubAssign for Vec2 {
+    /// Subtracts another vector from this vector in-place.
+    fn sub_assign(&mut self, other: Vec2) {
+        self.x -= other.x;
+        self.y -= other.y;
+    }
+}
+
+impl MulAssign<f32> for Vec2 {
+    /// Multiplies this vector by a scalar in-place.
+    fn mul_assign(&mut self, scalar: f32) {
+        self.x *= scalar;
+        self.y *= scalar;
+    }
+}
+
+impl DivAssign<f32> for Vec2 {
+    /// Divides this vector by a scalar in-place.
+    fn div_assign(&mut self, scalar: f32) {
+        self.x /= scalar;
+        self.y /= scalar;
+    }
+}
+
 
 ========================================
 FILE: ./objects/wave.rs
 ========================================
 
+//! Wave module.
+//!
+//! Contains the Wave struct for managing groups of enemies
+//! that appear together during gameplay.
+
+use serde::Deserialize;
 use crate::objects::classic_enemy::ClassicEnemy;
 
-pub(crate) struct Wave{
+/// A wave of enemies to be spawned and managed together.
+/// 
+/// Contains a collection of enemies and wave configuration parameters.
+#[derive(Debug, Deserialize)]
+pub struct Wave{
+    /// Collection of enemies in this wave
     enemies : Vec<ClassicEnemy>,
+    /// Maximum number of enemies allowed in this wave
     max_enemies : i32,
+    /// Maximum duration for this wave in seconds
     max_duration : f32,
 }
 
@@ -85,60 +436,111 @@ pub(crate) struct Wave{
 FILE: ./objects/player.rs
 ========================================
 
-use crate::objects::bullet::{Bullet, Source};
-use macroquad::math::Vec2;
+use macroquad::math::Rect;
+/// Player character module.
+/// 
+/// Contains the Player struct and related functionality for controlling
+/// the player character, including movement, combat, and state management.
 
+use crate::objects::bullet::{Bullet, Source};
+use crate::functionals::vec2::Vec2;
+
+/// The player-controlled character in the game.
+/// 
+/// Contains position, dimensions, combat stats, and cooldown tracking.
 pub struct Player
 {
-    pub position : Vec2,
-    pub dimensions : Vec2,
+    /// Width and height dimensions of the player
+    pub shape : Rect,
+    /// Movement speed in pixels per second
     pub speed: f32,
+    /// Attack speed (attacks per second)
     atk_speed: f32,
+    /// Current attack cooldown timer
     pub atk_cooldown : f32,
+    /// Velocity vector for spawned bullets
     bullet_speed : Vec2,
-    bullet_size : Vec2,
+    /// Dimensions of spawned bullets
+    bullet_radius: f32,
+    /// Damage dealt by player's bullets
     bullet_damage: f32,
+    bullet_pen : i32
 }
 impl Player
 {
+    /// Checks if the player can currently attack.
+    /// 
+    /// # Returns
+    /// `true` if the attack cooldown has expired, `false` otherwise.
     pub fn can_attack(&self) -> bool
         {
             self.atk_cooldown < 0.0
         }
 
+    /// Performs an attack, creating a new bullet.
+    /// 
+    /// # Arguments
+    /// * `bullets` - Mutable reference to the vector of active bullets
+    /// 
+    /// Sets the attack cooldown and spawns a bullet from the player's center position.
     pub fn attack(&mut self,  bullets : &mut Vec<Bullet>)
     {
         self.atk_cooldown = 1.0 / self.atk_speed;
         let damage = self.calculate_damage();
-        let x_offset = self.dimensions / 2.0;
-        let bullet = Bullet::new(self.position + x_offset,self.bullet_size, self.bullet_speed, Source::Player, damage);
+        let center = self.shape.center();
+        let origin = Vec2::new(center.x , center.y);
+        let bullet = Bullet::new(origin, self.bullet_radius, self.bullet_speed, Source::Player, damage, self.bullet_pen);
         bullets.push(bullet);
     }
 
+    /// Calculates the damage for the player's attack.
+    /// 
+    /// # Returns
+    /// The base bullet damage value.
     pub fn calculate_damage(&self) -> f32
     {
         self.bullet_damage
     }
+    
+    /// Updates the player's internal state for the current frame.
+    /// 
+    /// # Arguments
+    /// * `delta` - Time elapsed since the last frame
+    /// 
+    /// Decrements the attack cooldown timer.
     pub fn run_player(&mut self, delta : f32)
     {
         self.atk_cooldown -= delta;
     }
 
+    /// Creates a new Player with default values.
+    /// 
+    /// # Arguments
+    /// * `screen_width` - Width of the game screen for initial positioning
+    /// * `screen_height` - Height of the game screen for initial positioning
+    /// 
+    /// # Returns
+    /// A new Player positioned at the bottom center of the screen with default stats.
     pub fn new(screen_width : f32, screen_height : f32) -> Player {
         Player {
-            position: Vec2::new(screen_width/2.0, screen_height-10.0), // Start at the origin
-            dimensions: Vec2::new(30.0, 20.0), //size of player
+            shape : Rect::new(screen_width/2.0, screen_height-10.0, 30.0, 20.0), //size of player
             speed: 200.0,                  // Base movement speed
             atk_speed: 8.0,                // 1 attack per second
             atk_cooldown: 0.0,             // Ready to attack immediately
             bullet_damage: 10.0,                     // Base damage
             bullet_speed: Vec2::new(0.0, -100.0), // speed and direction of bullet
-            bullet_size: Vec2::new(4.0, 4.0), // size of bullet
+            bullet_radius: 4.0, // size of bullet
+            bullet_pen : 1, //number of enemies the bullet is allowed to hit
         }
     }
+    
+    /// Gets the current position of the player.
+    /// 
+    /// # Returns
+    /// A copy of the player's current position vector.
     pub fn position(&self) -> Vec2
     {
-        self.position
+        Vec2::new(self.shape.x, self.shape.y)
     }
 }
 
@@ -146,38 +548,94 @@ impl Player
 FILE: ./objects/bullet.rs
 ========================================
 
-use macroquad::math::{Vec2};
+use crate::functionals::rect::Rect;
+/// Bullet module.
+/// 
+/// Contains the Bullet struct and related types for managing
+/// projectiles fired by players and enemies.
 
+use crate::functionals::vec2::Vec2;
+
+/// A projectile entity in the game world.
+/// 
+/// Represents a bullet with position, radius, velocity, source, and damage.
 pub struct Bullet {
+    /// Current position of the bullet
     position : Vec2,
-    pub dimensions : Vec2,
+    /// Radius of the bullet
+    pub radius : f32,
+    pub penetration : i32,
+    /// Velocity vector determining movement direction and speed
     speed: Vec2,
+    /// The source that fired this bullet (player or enemy)
     source: Source,
-    damage : f32
+    /// Damage value dealt by this bullet
+    pub damage : f32,
+    hit_enemies : Vec<i32>
 }
 
 impl Bullet {
-    pub fn new(position : Vec2, dimensions : Vec2, speed: Vec2, source: Source, damage : f32) -> Bullet {
+    /// Creates a new Bullet instance.
+    /// 
+    /// # Arguments
+    /// * `position` - Initial position of the bullet
+    /// * `radius` - Radius of the bullet
+    /// * `speed` - Velocity vector for movement
+    /// * `source` - Entity that fired the bullet
+    /// * `damage` - Damage value to deal on hit
+    pub fn new(position : Vec2, radius : f32, speed: Vec2, source: Source, damage : f32, penetration : i32) -> Bullet {
         Bullet{
             position,
-            dimensions,
+            radius,
             speed,
             source,
-            damage
+            damage,
+            penetration,
+            hit_enemies : Vec::new()
         }
     }    
+    
+    /// Updates the bullet's position based on its velocity.
+    /// 
+    /// # Arguments
+    /// * `delta` - Time elapsed since the last frame
     pub fn move_bullet(&mut self, delta : f32)
     {
         self.position += self.speed * delta;
     }
     
+    /// Gets the current position of the bullet.
+    /// 
+    /// # Returns
+    /// A copy of the bullet's current position vector.
     pub fn get_position(&self) -> Vec2 {
         self.position
     }
+
+    pub fn collides_with_rect(&self, rect: Rect) -> bool
+    {
+        let closest_point = rect.get_closest_point(self.position);
+        let distance = (closest_point - self.position).length();
+        distance < self.radius
+    }
+
+    pub fn has_hit(&self, instance : i32) -> bool
+    {
+        self.hit_enemies.contains(&instance)
+    }
+    pub fn register_hit(&mut self, instance : i32){
+    self.hit_enemies.push(instance);
+    self.penetration -= 1;
+    }
 }
 
+/// Identifies the source of a bullet.
+/// 
+/// Used to distinguish between player-fired and enemy-fired projectiles.
 pub enum Source{
+    /// Bullet fired by the player
     Player,
+    /// Bullet fired by an enemy
     Enemy
 }
 
@@ -185,50 +643,92 @@ pub enum Source{
 FILE: ./objects/classic_enemy.rs
 ========================================
 
-use macroquad::math::{vec2, Vec2};
 
+/// Classic Enemy module.
+/// 
+/// Contains the ClassicEnemy struct representing a basic enemy type
+/// with movement patterns and health management.
+
+use serde::Deserialize;
+use crate::functionals::rect::Rect;
+use crate::functionals::vec2::Vec2;
+
+/// A basic enemy type that moves in a bouncing pattern.
+/// 
+/// ClassicEnemy moves horizontally and drops down when hitting screen edges.
+#[derive(Debug, Deserialize)]
 pub struct ClassicEnemy
 {
-    health : f32,
+    /// Current health of the enemy
+    pub(crate) health : f32,
+    /// Movement speed in pixels per second
     speed : f32,
-    position: Vec2,
+    /// Current position in world coordinates
+    pub shape : Rect,
+    /// Current horizontal movement direction
     dir : Direction,
-    size: Vec2,
+    pub instance : i32
 }
 
-enum Direction {
+/// Horizontal movement direction for enemies.
+#[derive(Debug, Deserialize)]
+pub enum Direction {
+    /// Moving towards the left side of the screen
     Left,
+    /// Moving towards the right side of the screen
     Right,
 }
 impl ClassicEnemy
 {
+    pub fn new(health : f32, speed : f32, position : Vec2, Size : Vec2, direction: Direction, instance : i32) -> ClassicEnemy
+    {
+        ClassicEnemy{
+            health,
+            speed,
+            shape : Rect::new(position.x, position.y, Size.x, Size.y),
+            dir : direction,
+            instance
+        }
+    }
+
+    /// Moves the enemy based on its current direction.
+    /// 
+    /// # Arguments
+    /// * `width` - Screen width boundary for collision detection
+    /// 
+    /// The enemy moves horizontally until it hits a screen edge,
+    /// then reverses direction and moves downward by ENEMY_LINE_HEIGHT.
     pub fn r#move(&mut self, width : f32)
     {
         if let Direction::Right = self.dir
         {
-            self.position.x = self.position.x + self.speed;
-            if self.position.x > width + self.size.x
+            self.shape.x = self.shape.x + self.speed;
+            if self.shape.x > width - self.shape.w
             {
-                self.position.x = width + self.size.x;
+                self.shape.x = width - self.shape.w;
                 self.dir = Direction::Left;
-                self.position.y += crate::constants::ENEMY_LINE_HEIGHT;
+                self.shape.y += crate::constants::ENEMY_LINE_HEIGHT;
             }
         }
         if let Direction::Left = self.dir
         {
-            self.position.x = self.position.x - self.speed;
-            if self.position.x < 0.0
+            self.shape.x = self.shape.x - self.speed;
+            if self.shape.x < 0.0
             {
-                self.position.x = 0.0;
+                self.shape.x = 0.0;
                 self.dir = Direction::Right;
-                self.position.y += crate::constants::ENEMY_LINE_HEIGHT;
+                self.shape.y += crate::constants::ENEMY_LINE_HEIGHT;
             }
         }
     }
 
-    ///Allows you to deal damage to this enemy.
-    ///
-    ///Returns true if enemy is killed, and false if still alive.
+    /// Applies damage to this enemy.
+    /// 
+    /// # Arguments
+    /// * `damage` - Amount of damage to apply
+    /// 
+    /// # Returns
+    /// `true` if the enemy is killed (health <= 0), `false` otherwise.
     pub fn take_damage(&mut self, damage : f32) -> bool
     {
         self.health -= damage;
@@ -257,18 +757,38 @@ pub mod wave;
 FILE: ./managers/wavemanager.rs
 ========================================
 
+/// Wave Manager module.
+/// 
+/// Contains the WaveManager struct for controlling enemy wave spawning
+/// and managing wave progression throughout the game.
+
 use crate::objects::wave;
+
+/// Manages enemy wave spawning and progression.
+/// 
+/// Tracks current wave state, enemy counts, and spawn timing.
 struct WaveManager {
+    /// Collection of all wave configurations
     waves : Vec<wave::Wave>,
+    /// Index of the currently active wave
     current_wave: i32,
+    /// Maximum number of enemies allowed at once
     max_enemies: i32,
+    /// Current number of active enemies
     current_enemies: i32,
+    /// Delay between enemy spawns in seconds
     spawn_delay : f32,
+    /// Current state of wave progression
     pub wave_state : WaveState
 }
+
+/// Represents the current state of wave management.
 pub enum WaveState {
+    /// Currently spawning enemies for the wave
     Spawning,
+    /// Wave is active with all enemies spawned
     InProgress,
+    /// Transitioning between waves
     Transitioning,
 }
 impl WaveManager {}
@@ -299,10 +819,16 @@ use macroquad::time::get_frame_time;
 use macroquad::window::{clear_background, next_frame, screen_height, screen_width};
 use functionals::actions;
 
+/// Main entry point for the game application.
+/// 
+/// Initializes the game state and runs the main game loop, which handles:
+/// - Processing user input
+/// - Updating game state
+/// - Rendering graphics
 #[macroquad::main("BasicShapes")]
 async fn main() {
     let gamestate = &mut GameState::new(screen_width(), screen_height());
-
+    gamestate.load_enemies();
     loop {
         let delta = get_frame_time();
         handle_inputs(gamestate, delta);
@@ -312,6 +838,13 @@ async fn main() {
     }
 }
 
+/// Handles player input and updates the game state accordingly.
+/// 
+/// # Arguments
+/// * `state` - Mutable reference to the current GameState
+/// * `delta` - Time elapsed since the last frame (used for delta-time movement)
+/// 
+/// Maps WASD keys to player movement directions and Space to shooting.
 fn handle_inputs(state: &mut GameState, delta: f32) {
     if is_key_down(KeyCode::W) {
         actions::do_w(&mut state.player, delta)
@@ -330,11 +863,18 @@ fn handle_inputs(state: &mut GameState, delta: f32) {
     }
 }
 
+/// Renders the current game state to the screen.
+/// 
+/// # Arguments
+/// * `gamestate` - Reference to the current GameState to render
+/// 
+/// Draws the player as a blue rectangle, bullets as red circles,
+/// and displays the bullet count in the top-left corner.
 fn render_gamestate(gamestate: &GameState) {
-    let player_pos = gamestate.player.position();
 
     clear_background(BLACK);
-    draw_rectangle(player_pos.x, player_pos.y, gamestate.player.dimensions.x, gamestate.player.dimensions.y, BLUE);
+    let player_rect = gamestate.player.shape;
+    draw_rectangle(player_rect.x, player_rect.y, player_rect.w, player_rect.h, BLUE);
     draw_text(
         &format!("{}", gamestate.bullets.len()),
         10.0,
@@ -345,8 +885,14 @@ fn render_gamestate(gamestate: &GameState) {
 
     for x in &gamestate.bullets {
         let pos = x.get_position();
-        draw_circle(pos.x, pos.y, x.dimensions.x, RED);
+        draw_circle(pos.x, pos.y, x.radius, RED);
 
+    }
+
+
+    for x in &gamestate.enemies {
+        let pos = x.shape.top_left();
+        draw_rectangle(pos.x, pos.y, x.shape.w, x.shape.h, RED);
     }
 }
 
@@ -357,37 +903,88 @@ FILE: ./gamestate.rs
 
 use crate::functionals::config::Config;
 use crate::functionals::math;
+use crate::functionals::vec2::Vec2;
 use crate::objects::*;
+use crate::objects::classic_enemy::{ClassicEnemy, Direction};
 use crate::objects::player::Player;
 
+/// Represents the current state of the game.
+/// 
+/// Contains all active game entities and configuration settings.
 pub struct GameState
 {
+    /// The player character controlled by the user
     pub player : player::Player,
+    /// All active bullets in the game world
     pub bullets : Vec<bullet::Bullet>,
+    /// All active enemies in the game world
     pub enemies : Vec<classic_enemy::ClassicEnemy>,
+    /// Game configuration including screen dimensions
     pub config : Config,
+    enemy_instance_count: i32
 }
 
 impl GameState {
+    /// Creates a new GameState with initialized entities.
+    /// 
+    /// # Arguments
+    /// * `screen_width` - Width of the game window in pixels
+    /// * `screen_height` - Height of the game window in pixels
+    /// 
+    /// # Returns
+    /// A new GameState instance with a player positioned at the bottom center,
+    /// empty bullet and enemy collections, and default configuration.
     pub fn new(screen_width : f32, screen_height : f32) -> GameState {
         let bullets : Vec<bullet::Bullet> = Vec::new();
         let enemies : Vec<classic_enemy::ClassicEnemy> = Vec::new();
         let config = Config{screen_width, screen_height};
         let player = Player::new(config.screen_width, config.screen_height);
+        let enemy_instance_count = 0;
         GameState{
             player,
             bullets,
             enemies,
             config,
+            enemy_instance_count
         }
     }
+    
+    pub fn load_enemies(&mut self)
+    {
+        let enemy = ClassicEnemy::new(50.0, 1.0, Vec2::new(100.0, 100.0), Vec2::new(200.0, 50.0), Direction::Right, self.enemy_instance_count);
+        self.enemies = vec![enemy]
+    }
 
+    /// Updates all game entities for the current frame.
+    /// 
+    /// # Arguments
+    /// * `delta` - Time elapsed since the last frame
+    /// 
+    /// Performs the following updates:
+    /// - Moves all bullets according to their velocity
+    /// - Removes bullets that have left the screen bounds
+    /// - Updates the player's internal state (e.g., cooldowns)
     pub fn run_state(&mut self, delta : f32)
     {
         for bullet in self.bullets.iter_mut(){
             bullet.move_bullet(delta);
+            for enemy in self.enemies.iter_mut(){
+                if bullet.collides_with_rect(enemy.shape)
+                {
+                    if !bullet.has_hit(enemy.instance) {
+                        bullet.register_hit(enemy.instance);
+                        enemy.take_damage(bullet.damage);
+                        break;
+                    }
+                }
+
+            }
         }
-        self.bullets.retain(|b| math::between(0.0, self.config.screen_width, 0.0, self.config.screen_height, b.get_position()));
+        self.enemies.retain(|e| e.health > 0.0);
+        self.bullets.retain(|b| math::between(0.0, self.config.screen_width, 0.0, self.config.screen_height, b.get_position()) && b.penetration > 0);
+        for enemy in self.enemies.iter_mut() {
+            enemy.r#move(self.config.screen_width);
+        }
         self.player.run_player(delta);
     }
 }
@@ -396,5 +993,10 @@ impl GameState {
 FILE: ./constants.rs
 ========================================
 
+/// Game constants module.
+/// 
+/// Contains global constant values used throughout the game.
+
+/// Height offset in pixels when enemies change direction and drop down.
 pub const ENEMY_LINE_HEIGHT : f32 = 100.0;
 

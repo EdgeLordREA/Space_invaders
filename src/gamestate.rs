@@ -1,6 +1,8 @@
 use crate::functionals::config::Config;
 use crate::functionals::math;
+use crate::functionals::vec2::Vec2;
 use crate::objects::*;
+use crate::objects::classic_enemy::{ClassicEnemy, Direction};
 use crate::objects::player::Player;
 
 /// Represents the current state of the game.
@@ -43,6 +45,12 @@ impl GameState {
             enemy_instance_count
         }
     }
+    
+    pub fn load_enemies(&mut self)
+    {
+        let enemy = ClassicEnemy::new(50.0, 1.0, Vec2::new(100.0, 100.0), Vec2::new(200.0, 50.0), Direction::Right, self.enemy_instance_count);
+        self.enemies = vec![enemy]
+    }
 
     /// Updates all game entities for the current frame.
     /// 
@@ -71,6 +79,9 @@ impl GameState {
         }
         self.enemies.retain(|e| e.health > 0.0);
         self.bullets.retain(|b| math::between(0.0, self.config.screen_width, 0.0, self.config.screen_height, b.get_position()) && b.penetration > 0);
+        for enemy in self.enemies.iter_mut() {
+            enemy.r#move(self.config.screen_width);
+        }
         self.player.run_player(delta);
     }
 }

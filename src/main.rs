@@ -23,7 +23,7 @@ use functionals::actions;
 #[macroquad::main("BasicShapes")]
 async fn main() {
     let gamestate = &mut GameState::new(screen_width(), screen_height());
-
+    gamestate.load_enemies();
     loop {
         let delta = get_frame_time();
         handle_inputs(gamestate, delta);
@@ -82,5 +82,11 @@ fn render_gamestate(gamestate: &GameState) {
         let pos = x.get_position();
         draw_circle(pos.x, pos.y, x.radius, RED);
 
+    }
+
+
+    for x in &gamestate.enemies {
+        let pos = x.shape.top_left();
+        draw_rectangle(pos.x, pos.y, x.shape.w, x.shape.h, RED);
     }
 }
