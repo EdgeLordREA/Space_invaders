@@ -1,0 +1,75 @@
+[
+  {
+    "enemies": [
+      {
+        "health": 50.0,
+        "speed": 1.2,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 10,
+        "instance": 0
+      },
+      {
+        "health": 50.0,
+        "speed": 1.2,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 10,
+        "instance": 1
+      },
+      {
+        "health": 50.0,
+        "speed": 1.2,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 10,
+        "instance": 2
+      },
+      {
+        "health": 50.0,
+        "speed": 1.2,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 10,
+        "instance": 3
+      },
+      {
+        "health": 50.0,
+        "speed": 1.2,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 10,
+        "instance": 4
+      }
+    ],
+    "max_enemies": 5,
+    "spawn_rate": 1.0,
+    "last_spawn_time": 0.0,
+    "max_duration": 0.0
+  }
+]

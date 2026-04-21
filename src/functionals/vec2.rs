@@ -1,11 +1,11 @@
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// A 2D vector type for representing positions, velocities, and dimensions.
 ///
 /// Supports common vector operations including addition, subtraction,
 /// scalar multiplication/division, dot product, and normalization.
-#[derive(Debug, Deserialize, Clone, Copy, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq)]
 pub struct Vec2
 {
     /// X component of the vector

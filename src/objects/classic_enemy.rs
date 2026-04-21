@@ -4,14 +4,14 @@
 /// Contains the ClassicEnemy struct representing a basic enemy type
 /// with movement patterns and health management.
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use crate::functionals::rect::Rect;
 use crate::functionals::vec2::Vec2;
 
 /// A basic enemy type that moves in a bouncing pattern.
 /// 
 /// ClassicEnemy moves horizontally and drops down when hitting screen edges.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ClassicEnemy
 {
     /// Current health of the enemy
@@ -22,28 +22,80 @@ pub struct ClassicEnemy
     pub shape : Rect,
     /// Current horizontal movement direction
     dir : Direction,
+    pub cash_value : i32,
     pub instance : i32
 }
 
 /// Horizontal movement direction for enemies.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize, Clone, Copy)]
 pub enum Direction {
     /// Moving towards the left side of the screen
     Left,
     /// Moving towards the right side of the screen
     Right,
 }
+
+impl From<i8> for Direction
+{
+    fn from(i : i8) -> Direction
+    {
+        match i
+        {
+            0 => Direction::Left,
+            1 => Direction::Right,
+            _ => panic!("Invalid direction value: {}", i)
+        }
+    }
+}
+
+impl Into<i8> for Direction
+{
+    fn into(self) -> i8
+    {
+        match self
+        {
+            Direction::Left => 0,
+            Direction::Right => 1,
+        }
+    }
+}
 impl ClassicEnemy
 {
-    pub fn new(health : f32, speed : f32, position : Vec2, Size : Vec2, direction: Direction, instance : i32) -> ClassicEnemy
+    pub fn new(health : f32, speed : f32, position : Vec2, size : Vec2, direction: Direction, cash_value : i32, instance : i32) -> ClassicEnemy
     {
         ClassicEnemy{
             health,
             speed,
-            shape : Rect::new(position.x, position.y, Size.x, Size.y),
+            shape : Rect::new(position.x, position.y, size.x, size.y),
             dir : direction,
+            cash_value,
             instance
         }
+    }
+
+    pub fn deserialize(health : f32, speed : f32, posx : f32, posy : f32, width : f32, height : f32, direction: i8, cash_value : i32) -> ClassicEnemy
+    {
+        ClassicEnemy{
+            health,
+            speed,
+            shape: Rect { x: posx, y: posy, w: width, h: height},
+            dir: direction.into(),
+            cash_value,
+            instance: 0,
+        }
+    }
+
+    pub fn serialize(&self) -> String
+    {
+        format!("{},{},{},{},{},{},{},{}",
+                self.health,
+                self.speed,
+                self.shape.x,
+                self.shape.y,
+                self.shape.w,
+                self.shape.h,
+                self.dir as i8,
+                self.cash_value)
     }
 
     /// Moves the enemy based on its current direction.

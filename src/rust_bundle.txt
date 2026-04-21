@@ -51,11 +51,11 @@ pub fn between(left: f32, right: f32, top: f32, bottom: f32, loc : Vec2) -> bool
 FILE: ./functionals/rect.rs
 ========================================
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 // Assuming Vec2 is in your crate
 use crate::functionals::vec2::Vec2;
 
-#[derive(Debug, Deserialize, Clone, Copy, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq)]
 pub struct Rect {
     pub x: f32,
     pub y: f32,
@@ -130,23 +130,32 @@ impl Rect {
 FILE: ./functionals/waveloader.rs
 ========================================
 
-/// Wave loading utilities.
-/// 
-/// This module provides functionality for loading and managing
-/// enemy wave configurations from external sources.
-
+use std::fs::{read_to_string, File};
+use std::io::Write;
 use crate::objects::wave::Wave;
 
-/// Loads all wave configurations for the game.
-/// 
-/// # Returns
-/// A vector of Wave objects representing all enemy waves.
-/// 
-/// # Note
-/// Currently unimplemented - placeholder for future wave loading functionality.
-pub fn load_waves() -> Vec<Wave>
-{
-    todo!()
+pub fn load_waves(filename: &str) -> Vec<Wave> {
+    let data = read_to_string(filename)
+        .expect("Unable to read wave file");
+
+    // Deserialize the JSON string directly into a Vec<Wave>
+    let waves: Vec<Wave> = serde_json::from_str(&data)
+        .expect("JSON was not well-formatted");
+
+    waves
+}
+
+/// Saves waves to a JSON file with pretty-printing.
+pub fn save_waves(waves: &Vec<Wave>, filename: &str) {
+    let mut file = File::create(filename)
+        .expect("Unable to create wave file");
+
+    // "to_string_pretty" makes the file human-readable
+    let json = serde_json::to_string_pretty(waves)
+        .expect("Failed to serialize waves");
+
+    file.write_all(json.as_bytes())
+        .expect("Failed to write to file");
 }
 
 ========================================
@@ -227,13 +236,13 @@ FILE: ./functionals/vec2.rs
 ========================================
 
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// A 2D vector type for representing positions, velocities, and dimensions.
 ///
 /// Supports common vector operations including addition, subtraction,
 /// scalar multiplication/division, dot product, and normalization.
-#[derive(Debug, Deserialize, Clone, Copy, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq)]
 pub struct Vec2
 {
     /// X component of the vector
@@ -416,20 +425,94 @@ FILE: ./objects/wave.rs
 //! Contains the Wave struct for managing groups of enemies
 //! that appear together during gameplay.
 
-use serde::Deserialize;
+use std::collections::VecDeque;
+use serde::{Deserialize, Serialize};
 use crate::objects::classic_enemy::ClassicEnemy;
 
 /// A wave of enemies to be spawned and managed together.
 /// 
 /// Contains a collection of enemies and wave configuration parameters.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Wave{
     /// Collection of enemies in this wave
-    enemies : Vec<ClassicEnemy>,
+    pub enemies : VecDeque<ClassicEnemy>,
     /// Maximum number of enemies allowed in this wave
     max_enemies : i32,
+    ///enemies per second
+    spawn_rate : f32,
+    last_spawn_time : f32,
     /// Maximum duration for this wave in seconds
     max_duration : f32,
+}
+
+impl Wave {
+    pub fn new() -> Wave {
+        Wave{
+            enemies : VecDeque::new(),
+            max_enemies : 0,
+            spawn_rate : 0.0,
+            last_spawn_time : 0.0,
+            max_duration : 0.0
+        }
+    }
+
+    pub fn deserialize(enemies : Vec<ClassicEnemy>, max_enemies : i32, spawn_rate : f32, max_duration : f32) -> Wave
+    {
+        let mut wv = Self::new();
+        wv.set_enemies(enemies);
+        wv.set_max_enemies(max_enemies);
+        wv.set_spawn_rate(spawn_rate);
+        wv.set_max_duration(max_duration);
+        wv.last_spawn_time = 0.0;
+        wv
+    }
+
+
+
+    pub fn run_wave(&mut self, delta : f32, enemy_count : i32) -> Option<ClassicEnemy>
+    {
+        if self.enemies.is_empty() {
+            return None;
+        }
+        self.last_spawn_time += delta;
+        let seconds_per_enemy = 1.0 / self.spawn_rate;
+        if self.last_spawn_time > seconds_per_enemy && enemy_count < self.max_enemies{
+            self.last_spawn_time -= seconds_per_enemy;
+            self.enemies.pop_front()
+        }
+        else{
+            None
+        }
+    }
+
+    pub fn set_enemies(&mut self, enemies : Vec<ClassicEnemy>)
+    {
+        self.enemies = enemies.into();
+    }
+
+    pub fn add_enemies(&mut self, enemy : ClassicEnemy)
+    {
+        self.enemies.push_back(enemy)
+    }
+    pub fn set_max_enemies(&mut self, max_enemies : i32)
+    {
+        self.max_enemies = max_enemies;
+    }
+
+    pub fn set_spawn_rate(&mut self, spawn_rate : f32)
+    {
+        self.spawn_rate = spawn_rate;
+    }
+
+    pub fn set_max_duration(&mut self, max_duration : f32)
+    {
+        self.max_duration = max_duration;
+    }
+
+    pub fn is_complete(&self) -> bool
+    {
+        self.enemies.is_empty()
+    }
 }
 
 ========================================
@@ -649,14 +732,14 @@ FILE: ./objects/classic_enemy.rs
 /// Contains the ClassicEnemy struct representing a basic enemy type
 /// with movement patterns and health management.
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use crate::functionals::rect::Rect;
 use crate::functionals::vec2::Vec2;
 
 /// A basic enemy type that moves in a bouncing pattern.
 /// 
 /// ClassicEnemy moves horizontally and drops down when hitting screen edges.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ClassicEnemy
 {
     /// Current health of the enemy
@@ -667,28 +750,80 @@ pub struct ClassicEnemy
     pub shape : Rect,
     /// Current horizontal movement direction
     dir : Direction,
+    pub cash_value : i32,
     pub instance : i32
 }
 
 /// Horizontal movement direction for enemies.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize, Clone, Copy)]
 pub enum Direction {
     /// Moving towards the left side of the screen
     Left,
     /// Moving towards the right side of the screen
     Right,
 }
+
+impl From<i8> for Direction
+{
+    fn from(i : i8) -> Direction
+    {
+        match i
+        {
+            0 => Direction::Left,
+            1 => Direction::Right,
+            _ => panic!("Invalid direction value: {}", i)
+        }
+    }
+}
+
+impl Into<i8> for Direction
+{
+    fn into(self) -> i8
+    {
+        match self
+        {
+            Direction::Left => 0,
+            Direction::Right => 1,
+        }
+    }
+}
 impl ClassicEnemy
 {
-    pub fn new(health : f32, speed : f32, position : Vec2, Size : Vec2, direction: Direction, instance : i32) -> ClassicEnemy
+    pub fn new(health : f32, speed : f32, position : Vec2, size : Vec2, direction: Direction, cash_value : i32, instance : i32) -> ClassicEnemy
     {
         ClassicEnemy{
             health,
             speed,
-            shape : Rect::new(position.x, position.y, Size.x, Size.y),
+            shape : Rect::new(position.x, position.y, size.x, size.y),
             dir : direction,
+            cash_value,
             instance
         }
+    }
+
+    pub fn deserialize(health : f32, speed : f32, posx : f32, posy : f32, width : f32, height : f32, direction: i8, cash_value : i32) -> ClassicEnemy
+    {
+        ClassicEnemy{
+            health,
+            speed,
+            shape: Rect { x: posx, y: posy, w: width, h: height},
+            dir: direction.into(),
+            cash_value,
+            instance: 0,
+        }
+    }
+
+    pub fn serialize(&self) -> String
+    {
+        format!("{},{},{},{},{},{},{},{}",
+                self.health,
+                self.speed,
+                self.shape.x,
+                self.shape.y,
+                self.shape.w,
+                self.shape.h,
+                self.dir as i8,
+                self.cash_value)
     }
 
     /// Moves the enemy based on its current direction.
@@ -828,12 +963,14 @@ use functionals::actions;
 #[macroquad::main("BasicShapes")]
 async fn main() {
     let gamestate = &mut GameState::new(screen_width(), screen_height());
-    gamestate.load_enemies();
     loop {
-        let delta = get_frame_time();
-        handle_inputs(gamestate, delta);
-        gamestate.run_state(delta);
-        render_gamestate(gamestate);
+        if !gamestate.wave_complete() {
+            let delta = get_frame_time();
+            handle_inputs(gamestate, delta);
+            gamestate.run_state(delta);
+            render_gamestate(gamestate);
+        }
+
         next_frame().await
     }
 }
@@ -883,6 +1020,9 @@ fn render_gamestate(gamestate: &GameState) {
         RED,
     );
 
+    draw_text(&format!("{}", gamestate.cash), 10.0, 30.0, 20.0, RED
+    );
+
     for x in &gamestate.bullets {
         let pos = x.get_position();
         draw_circle(pos.x, pos.y, x.radius, RED);
@@ -907,6 +1047,7 @@ use crate::functionals::vec2::Vec2;
 use crate::objects::*;
 use crate::objects::classic_enemy::{ClassicEnemy, Direction};
 use crate::objects::player::Player;
+use crate::objects::wave::Wave;
 
 /// Represents the current state of the game.
 /// 
@@ -918,10 +1059,12 @@ pub struct GameState
     /// All active bullets in the game world
     pub bullets : Vec<bullet::Bullet>,
     /// All active enemies in the game world
-    pub enemies : Vec<classic_enemy::ClassicEnemy>,
+    pub enemies : Vec<ClassicEnemy>,
     /// Game configuration including screen dimensions
     pub config : Config,
-    enemy_instance_count: i32
+    pub wave : Wave,
+    enemy_instance_count: i32,
+    pub cash : i32
 }
 
 impl GameState {
@@ -936,23 +1079,36 @@ impl GameState {
     /// empty bullet and enemy collections, and default configuration.
     pub fn new(screen_width : f32, screen_height : f32) -> GameState {
         let bullets : Vec<bullet::Bullet> = Vec::new();
-        let enemies : Vec<classic_enemy::ClassicEnemy> = Vec::new();
+        let enemies : Vec<ClassicEnemy> = Vec::new();
+        let wave = Wave::new();
         let config = Config{screen_width, screen_height};
         let player = Player::new(config.screen_width, config.screen_height);
         let enemy_instance_count = 0;
-        GameState{
+        let cash = 0;
+        let mut gs = GameState{
             player,
             bullets,
             enemies,
+            wave,
             config,
-            enemy_instance_count
-        }
+            enemy_instance_count,
+            cash
+        };
+        gs.load_enemies();
+        gs
     }
     
     pub fn load_enemies(&mut self)
     {
-        let enemy = ClassicEnemy::new(50.0, 1.0, Vec2::new(100.0, 100.0), Vec2::new(200.0, 50.0), Direction::Right, self.enemy_instance_count);
-        self.enemies = vec![enemy]
+        for _ in 0..5 {
+
+            let enemy = ClassicEnemy::new(50.0, 1.2, Vec2::new(100.0, 100.0), Vec2::new(40.0, 20.0), Direction::Right, 10, self.enemy_instance_count);
+            self.wave.add_enemies(enemy);
+            self.enemy_instance_count += 1;
+        }
+        self.wave.set_max_enemies(5);
+        self.wave.set_spawn_rate(1.0);
+        self.wave.set_max_duration(999.0);
     }
 
     /// Updates all game entities for the current frame.
@@ -966,9 +1122,37 @@ impl GameState {
     /// - Updates the player's internal state (e.g., cooldowns)
     pub fn run_state(&mut self, delta : f32)
     {
-        for bullet in self.bullets.iter_mut(){
+        self.run_bullets(delta);
+
+        self.run_enemies(delta);
+
+        self.player.run_player(delta);
+    }
+
+    pub fn wave_complete(&self) -> bool
+    {
+        self.wave.enemies.is_empty() && self.wave.is_complete()
+    }
+
+    fn run_enemies(&mut self, delta : f32) {
+        let x = self.wave.run_wave(delta, self.enemies.len() as i32);
+        if x.is_some() {
+            self.enemies.push(x.unwrap());
+        }
+        for enemy in self.enemies.iter_mut() {
+            if enemy.health <= 0.0 {
+                self.cash += enemy.cash_value;
+                continue;
+            }
+            enemy.r#move(self.config.screen_width);
+        }
+        self.enemies.retain(|e| e.health > 0.0);
+    }
+
+    fn run_bullets(&mut self, delta: f32) {
+        for bullet in self.bullets.iter_mut() {
             bullet.move_bullet(delta);
-            for enemy in self.enemies.iter_mut(){
+            for enemy in self.enemies.iter_mut() {
                 if bullet.collides_with_rect(enemy.shape)
                 {
                     if !bullet.has_hit(enemy.instance) {
@@ -977,15 +1161,9 @@ impl GameState {
                         break;
                     }
                 }
-
             }
         }
-        self.enemies.retain(|e| e.health > 0.0);
         self.bullets.retain(|b| math::between(0.0, self.config.screen_width, 0.0, self.config.screen_height, b.get_position()) && b.penetration > 0);
-        for enemy in self.enemies.iter_mut() {
-            enemy.r#move(self.config.screen_width);
-        }
-        self.player.run_player(delta);
     }
 }
 

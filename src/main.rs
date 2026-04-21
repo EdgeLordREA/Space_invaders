@@ -1,10 +1,5 @@
-pub mod gamestate;
-mod objects;
-pub mod constants;
-pub mod managers;
-pub mod functionals;
+use Space_invaders;
 
-use crate::gamestate::GameState;
 use macroquad::color::*;
 use macroquad::input::{is_key_down, KeyCode};
 use macroquad::prelude::draw_rectangle;
@@ -12,7 +7,8 @@ use macroquad::shapes::draw_circle;
 use macroquad::text::draw_text;
 use macroquad::time::get_frame_time;
 use macroquad::window::{clear_background, next_frame, screen_height, screen_width};
-use functionals::actions;
+use Space_invaders::functionals::actions;
+use Space_invaders::gamestate::GameState;
 
 /// Main entry point for the game application.
 /// 
@@ -23,12 +19,14 @@ use functionals::actions;
 #[macroquad::main("BasicShapes")]
 async fn main() {
     let gamestate = &mut GameState::new(screen_width(), screen_height());
-    gamestate.load_enemies();
     loop {
-        let delta = get_frame_time();
-        handle_inputs(gamestate, delta);
-        gamestate.run_state(delta);
-        render_gamestate(gamestate);
+        if !gamestate.wave_complete() {
+            let delta = get_frame_time();
+            handle_inputs(gamestate, delta);
+            gamestate.run_state(delta);
+            render_gamestate(gamestate);
+        }
+
         next_frame().await
     }
 }
@@ -76,6 +74,9 @@ fn render_gamestate(gamestate: &GameState) {
         10.0,
         20.0,
         RED,
+    );
+
+    draw_text(&format!("{}", gamestate.cash), 10.0, 30.0, 20.0, RED
     );
 
     for x in &gamestate.bullets {

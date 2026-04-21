@@ -4,6 +4,7 @@ use crate::functionals::vec2::Vec2;
 use crate::objects::*;
 use crate::objects::classic_enemy::{ClassicEnemy, Direction};
 use crate::objects::player::Player;
+use crate::objects::wave::Wave;
 
 /// Represents the current state of the game.
 /// 
@@ -15,10 +16,12 @@ pub struct GameState
     /// All active bullets in the game world
     pub bullets : Vec<bullet::Bullet>,
     /// All active enemies in the game world
-    pub enemies : Vec<classic_enemy::ClassicEnemy>,
+    pub enemies : Vec<ClassicEnemy>,
     /// Game configuration including screen dimensions
     pub config : Config,
-    enemy_instance_count: i32
+    pub wave : Wave,
+    enemy_instance_count: i32,
+    pub cash : i32
 }
 
 impl GameState {
@@ -33,23 +36,36 @@ impl GameState {
     /// empty bullet and enemy collections, and default configuration.
     pub fn new(screen_width : f32, screen_height : f32) -> GameState {
         let bullets : Vec<bullet::Bullet> = Vec::new();
-        let enemies : Vec<classic_enemy::ClassicEnemy> = Vec::new();
+        let enemies : Vec<ClassicEnemy> = Vec::new();
+        let wave = Wave::new();
         let config = Config{screen_width, screen_height};
         let player = Player::new(config.screen_width, config.screen_height);
         let enemy_instance_count = 0;
-        GameState{
+        let cash = 0;
+        let mut gs = GameState{
             player,
             bullets,
             enemies,
+            wave,
             config,
-            enemy_instance_count
-        }
+            enemy_instance_count,
+            cash
+        };
+        gs.load_enemies();
+        gs
     }
     
     pub fn load_enemies(&mut self)
     {
-        let enemy = ClassicEnemy::new(50.0, 1.0, Vec2::new(100.0, 100.0), Vec2::new(200.0, 50.0), Direction::Right, self.enemy_instance_count);
-        self.enemies = vec![enemy]
+        for _ in 0..5 {
+
+            let enemy = ClassicEnemy::new(50.0, 1.2, Vec2::new(100.0, 100.0), Vec2::new(40.0, 20.0), Direction::Right, 10, self.enemy_instance_count);
+            self.wave.add_enemies(enemy);
+            self.enemy_instance_count += 1;
+        }
+        self.wave.set_max_enemies(5);
+        self.wave.set_spawn_rate(1.0);
+        self.wave.set_max_duration(999.0);
     }
 
     /// Updates all game entities for the current frame.
@@ -63,9 +79,37 @@ impl GameState {
     /// - Updates the player's internal state (e.g., cooldowns)
     pub fn run_state(&mut self, delta : f32)
     {
-        for bullet in self.bullets.iter_mut(){
+        self.run_bullets(delta);
+
+        self.run_enemies(delta);
+
+        self.player.run_player(delta);
+    }
+
+    pub fn wave_complete(&self) -> bool
+    {
+        self.enemies.is_empty() && self.wave.is_complete()
+    }
+
+    fn run_enemies(&mut self, delta : f32) {
+        let x = self.wave.run_wave(delta, self.enemies.len() as i32);
+        if x.is_some() {
+            self.enemies.push(x.unwrap());
+        }
+        for enemy in self.enemies.iter_mut() {
+            if enemy.health <= 0.0 {
+                self.cash += enemy.cash_value;
+                continue;
+            }
+            enemy.r#move(self.config.screen_width);
+        }
+        self.enemies.retain(|e| e.health > 0.0);
+    }
+
+    fn run_bullets(&mut self, delta: f32) {
+        for bullet in self.bullets.iter_mut() {
             bullet.move_bullet(delta);
-            for enemy in self.enemies.iter_mut(){
+            for enemy in self.enemies.iter_mut() {
                 if bullet.collides_with_rect(enemy.shape)
                 {
                     if !bullet.has_hit(enemy.instance) {
@@ -74,14 +118,8 @@ impl GameState {
                         break;
                     }
                 }
-
             }
         }
-        self.enemies.retain(|e| e.health > 0.0);
         self.bullets.retain(|b| math::between(0.0, self.config.screen_width, 0.0, self.config.screen_height, b.get_position()) && b.penetration > 0);
-        for enemy in self.enemies.iter_mut() {
-            enemy.r#move(self.config.screen_width);
-        }
-        self.player.run_player(delta);
     }
 }
