@@ -8,6 +8,7 @@ use macroquad::text::draw_text;
 use macroquad::time::get_frame_time;
 use macroquad::window::{clear_background, next_frame, screen_height, screen_width};
 use Space_invaders::functionals::actions;
+use Space_invaders::functionals::waveloader::load_waves;
 use Space_invaders::gamestate::GameState;
 
 /// Main entry point for the game application.
@@ -19,6 +20,8 @@ use Space_invaders::gamestate::GameState;
 #[macroquad::main("BasicShapes")]
 async fn main() {
     let gamestate = &mut GameState::new(screen_width(), screen_height());
+    let mut all_waves = load_waves("waves.json");
+    gamestate.wave = all_waves.pop_front().unwrap();
     loop {
         if !gamestate.wave_complete() {
             let delta = get_frame_time();
@@ -26,9 +29,18 @@ async fn main() {
             gamestate.run_state(delta);
             render_gamestate(gamestate);
         }
-
+        else {
+            if take_break(gamestate)
+            {
+                gamestate.wave = all_waves.pop_front().unwrap();
+            }
+        }
         next_frame().await
     }
+}
+
+fn take_break(gs : &mut GameState) -> bool{
+    true
 }
 
 /// Handles player input and updates the game state accordingly.

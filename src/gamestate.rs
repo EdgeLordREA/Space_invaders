@@ -42,7 +42,7 @@ impl GameState {
         let player = Player::new(config.screen_width, config.screen_height);
         let enemy_instance_count = 0;
         let cash = 0;
-        let mut gs = GameState{
+        GameState{
             player,
             bullets,
             enemies,
@@ -50,22 +50,7 @@ impl GameState {
             config,
             enemy_instance_count,
             cash
-        };
-        gs.load_enemies();
-        gs
-    }
-    
-    pub fn load_enemies(&mut self)
-    {
-        for _ in 0..5 {
-
-            let enemy = ClassicEnemy::new(50.0, 1.2, Vec2::new(100.0, 100.0), Vec2::new(40.0, 20.0), Direction::Right, 10, self.enemy_instance_count);
-            self.wave.add_enemies(enemy);
-            self.enemy_instance_count += 1;
         }
-        self.wave.set_max_enemies(5);
-        self.wave.set_spawn_rate(1.0);
-        self.wave.set_max_duration(999.0);
     }
 
     /// Updates all game entities for the current frame.

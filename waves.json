@@ -6,12 +6,12 @@
         "speed": 1.2,
         "shape": {
           "x": 100.0,
-          "y": 100.0,
+          "y": 50.0,
           "w": 40.0,
           "h": 20.0
         },
         "dir": "Right",
-        "cash_value": 10,
+        "cash_value": 25,
         "instance": 0
       },
       {
@@ -19,12 +19,12 @@
         "speed": 1.2,
         "shape": {
           "x": 100.0,
-          "y": 100.0,
+          "y": 50.0,
           "w": 40.0,
           "h": 20.0
         },
         "dir": "Right",
-        "cash_value": 10,
+        "cash_value": 25,
         "instance": 1
       },
       {
@@ -32,12 +32,12 @@
         "speed": 1.2,
         "shape": {
           "x": 100.0,
-          "y": 100.0,
+          "y": 50.0,
           "w": 40.0,
           "h": 20.0
         },
         "dir": "Right",
-        "cash_value": 10,
+        "cash_value": 25,
         "instance": 2
       },
       {
@@ -45,12 +45,12 @@
         "speed": 1.2,
         "shape": {
           "x": 100.0,
-          "y": 100.0,
+          "y": 50.0,
           "w": 40.0,
           "h": 20.0
         },
         "dir": "Right",
-        "cash_value": 10,
+        "cash_value": 25,
         "instance": 3
       },
       {
@@ -58,17 +58,1428 @@
         "speed": 1.2,
         "shape": {
           "x": 100.0,
-          "y": 100.0,
+          "y": 50.0,
           "w": 40.0,
           "h": 20.0
         },
         "dir": "Right",
-        "cash_value": 10,
+        "cash_value": 25,
         "instance": 4
       }
     ],
     "max_enemies": 5,
     "spawn_rate": 1.0,
+    "last_spawn_time": 0.0,
+    "max_duration": 0.0
+  },
+  {
+    "enemies": [
+      {
+        "health": 40.0,
+        "speed": 1.5,
+        "shape": {
+          "x": 100.0,
+          "y": 60.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 20,
+        "instance": 0
+      },
+      {
+        "health": 40.0,
+        "speed": 1.5,
+        "shape": {
+          "x": 100.0,
+          "y": 60.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 20,
+        "instance": 1
+      },
+      {
+        "health": 40.0,
+        "speed": 1.5,
+        "shape": {
+          "x": 100.0,
+          "y": 60.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 20,
+        "instance": 2
+      },
+      {
+        "health": 40.0,
+        "speed": 1.5,
+        "shape": {
+          "x": 100.0,
+          "y": 60.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 20,
+        "instance": 3
+      },
+      {
+        "health": 40.0,
+        "speed": 1.5,
+        "shape": {
+          "x": 100.0,
+          "y": 60.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 20,
+        "instance": 4
+      },
+      {
+        "health": 40.0,
+        "speed": 1.5,
+        "shape": {
+          "x": 100.0,
+          "y": 60.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 20,
+        "instance": 5
+      },
+      {
+        "health": 40.0,
+        "speed": 1.5,
+        "shape": {
+          "x": 100.0,
+          "y": 60.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 20,
+        "instance": 6
+      },
+      {
+        "health": 40.0,
+        "speed": 1.5,
+        "shape": {
+          "x": 100.0,
+          "y": 60.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 20,
+        "instance": 7
+      }
+    ],
+    "max_enemies": 8,
+    "spawn_rate": 1.5,
+    "last_spawn_time": 0.0,
+    "max_duration": 0.0
+  },
+  {
+    "enemies": [
+      {
+        "health": 30.0,
+        "speed": 2.0,
+        "shape": {
+          "x": 100.0,
+          "y": 70.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 15,
+        "instance": 0
+      },
+      {
+        "health": 30.0,
+        "speed": 2.0,
+        "shape": {
+          "x": 100.0,
+          "y": 70.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 15,
+        "instance": 1
+      },
+      {
+        "health": 30.0,
+        "speed": 2.0,
+        "shape": {
+          "x": 100.0,
+          "y": 70.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 15,
+        "instance": 2
+      },
+      {
+        "health": 30.0,
+        "speed": 2.0,
+        "shape": {
+          "x": 100.0,
+          "y": 70.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 15,
+        "instance": 3
+      },
+      {
+        "health": 30.0,
+        "speed": 2.0,
+        "shape": {
+          "x": 100.0,
+          "y": 70.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 15,
+        "instance": 4
+      },
+      {
+        "health": 30.0,
+        "speed": 2.0,
+        "shape": {
+          "x": 100.0,
+          "y": 70.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 15,
+        "instance": 5
+      },
+      {
+        "health": 30.0,
+        "speed": 2.0,
+        "shape": {
+          "x": 100.0,
+          "y": 70.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 15,
+        "instance": 6
+      },
+      {
+        "health": 30.0,
+        "speed": 2.0,
+        "shape": {
+          "x": 100.0,
+          "y": 70.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 15,
+        "instance": 7
+      },
+      {
+        "health": 30.0,
+        "speed": 2.0,
+        "shape": {
+          "x": 100.0,
+          "y": 70.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 15,
+        "instance": 8
+      },
+      {
+        "health": 30.0,
+        "speed": 2.0,
+        "shape": {
+          "x": 100.0,
+          "y": 70.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 15,
+        "instance": 9
+      },
+      {
+        "health": 30.0,
+        "speed": 2.0,
+        "shape": {
+          "x": 100.0,
+          "y": 70.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 15,
+        "instance": 10
+      },
+      {
+        "health": 30.0,
+        "speed": 2.0,
+        "shape": {
+          "x": 100.0,
+          "y": 70.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 15,
+        "instance": 11
+      }
+    ],
+    "max_enemies": 12,
+    "spawn_rate": 2.5,
+    "last_spawn_time": 0.0,
+    "max_duration": 0.0
+  },
+  {
+    "enemies": [
+      {
+        "health": 150.0,
+        "speed": 0.8,
+        "shape": {
+          "x": 100.0,
+          "y": 80.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 75,
+        "instance": 0
+      },
+      {
+        "health": 150.0,
+        "speed": 0.8,
+        "shape": {
+          "x": 100.0,
+          "y": 80.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 75,
+        "instance": 1
+      },
+      {
+        "health": 150.0,
+        "speed": 0.8,
+        "shape": {
+          "x": 100.0,
+          "y": 80.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 75,
+        "instance": 2
+      },
+      {
+        "health": 150.0,
+        "speed": 0.8,
+        "shape": {
+          "x": 100.0,
+          "y": 80.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 75,
+        "instance": 3
+      }
+    ],
+    "max_enemies": 4,
+    "spawn_rate": 0.5,
+    "last_spawn_time": 0.0,
+    "max_duration": 0.0
+  },
+  {
+    "enemies": [
+      {
+        "health": 60.0,
+        "speed": 1.4,
+        "shape": {
+          "x": 100.0,
+          "y": 90.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 30,
+        "instance": 0
+      },
+      {
+        "health": 60.0,
+        "speed": 1.4,
+        "shape": {
+          "x": 100.0,
+          "y": 90.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 30,
+        "instance": 1
+      },
+      {
+        "health": 60.0,
+        "speed": 1.4,
+        "shape": {
+          "x": 100.0,
+          "y": 90.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 30,
+        "instance": 2
+      },
+      {
+        "health": 60.0,
+        "speed": 1.4,
+        "shape": {
+          "x": 100.0,
+          "y": 90.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 30,
+        "instance": 3
+      },
+      {
+        "health": 60.0,
+        "speed": 1.4,
+        "shape": {
+          "x": 100.0,
+          "y": 90.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 30,
+        "instance": 4
+      },
+      {
+        "health": 60.0,
+        "speed": 1.4,
+        "shape": {
+          "x": 100.0,
+          "y": 90.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 30,
+        "instance": 5
+      },
+      {
+        "health": 60.0,
+        "speed": 1.4,
+        "shape": {
+          "x": 100.0,
+          "y": 90.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 30,
+        "instance": 6
+      },
+      {
+        "health": 60.0,
+        "speed": 1.4,
+        "shape": {
+          "x": 100.0,
+          "y": 90.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 30,
+        "instance": 7
+      },
+      {
+        "health": 60.0,
+        "speed": 1.4,
+        "shape": {
+          "x": 100.0,
+          "y": 90.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 30,
+        "instance": 8
+      },
+      {
+        "health": 60.0,
+        "speed": 1.4,
+        "shape": {
+          "x": 100.0,
+          "y": 90.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 30,
+        "instance": 9
+      }
+    ],
+    "max_enemies": 10,
+    "spawn_rate": 1.2,
+    "last_spawn_time": 0.0,
+    "max_duration": 0.0
+  },
+  {
+    "enemies": [
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 0
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 1
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 2
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 3
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 4
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 5
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 6
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 7
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 8
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 9
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 10
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 11
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 12
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 13
+      },
+      {
+        "health": 25.0,
+        "speed": 2.5,
+        "shape": {
+          "x": 100.0,
+          "y": 100.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 12,
+        "instance": 14
+      }
+    ],
+    "max_enemies": 15,
+    "spawn_rate": 3.0,
+    "last_spawn_time": 0.0,
+    "max_duration": 0.0
+  },
+  {
+    "enemies": [
+      {
+        "health": 100.0,
+        "speed": 1.1,
+        "shape": {
+          "x": 100.0,
+          "y": 110.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 50,
+        "instance": 0
+      },
+      {
+        "health": 100.0,
+        "speed": 1.1,
+        "shape": {
+          "x": 100.0,
+          "y": 110.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 50,
+        "instance": 1
+      },
+      {
+        "health": 100.0,
+        "speed": 1.1,
+        "shape": {
+          "x": 100.0,
+          "y": 110.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 50,
+        "instance": 2
+      },
+      {
+        "health": 100.0,
+        "speed": 1.1,
+        "shape": {
+          "x": 100.0,
+          "y": 110.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 50,
+        "instance": 3
+      },
+      {
+        "health": 100.0,
+        "speed": 1.1,
+        "shape": {
+          "x": 100.0,
+          "y": 110.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 50,
+        "instance": 4
+      },
+      {
+        "health": 100.0,
+        "speed": 1.1,
+        "shape": {
+          "x": 100.0,
+          "y": 110.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 50,
+        "instance": 5
+      }
+    ],
+    "max_enemies": 6,
+    "spawn_rate": 0.8,
+    "last_spawn_time": 0.0,
+    "max_duration": 0.0
+  },
+  {
+    "enemies": [
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 0
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 1
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 2
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 3
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 4
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 5
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 6
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 7
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 8
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 9
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 10
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 11
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 12
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 13
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 14
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 15
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 16
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 17
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 18
+      },
+      {
+        "health": 20.0,
+        "speed": 2.2,
+        "shape": {
+          "x": 100.0,
+          "y": 120.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 10,
+        "instance": 19
+      }
+    ],
+    "max_enemies": 20,
+    "spawn_rate": 4.0,
+    "last_spawn_time": 0.0,
+    "max_duration": 0.0
+  },
+  {
+    "enemies": [
+      {
+        "health": 300.0,
+        "speed": 0.5,
+        "shape": {
+          "x": 100.0,
+          "y": 130.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 150,
+        "instance": 0
+      },
+      {
+        "health": 300.0,
+        "speed": 0.5,
+        "shape": {
+          "x": 100.0,
+          "y": 130.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 150,
+        "instance": 1
+      },
+      {
+        "health": 300.0,
+        "speed": 0.5,
+        "shape": {
+          "x": 100.0,
+          "y": 130.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Right",
+        "cash_value": 150,
+        "instance": 2
+      }
+    ],
+    "max_enemies": 3,
+    "spawn_rate": 0.3,
+    "last_spawn_time": 0.0,
+    "max_duration": 0.0
+  },
+  {
+    "enemies": [
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 0
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 1
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 2
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 3
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 4
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 5
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 6
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 7
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 8
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 9
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 10
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 11
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 12
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 13
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 14
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 15
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 16
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 17
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 18
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 19
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 20
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 21
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 22
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 23
+      },
+      {
+        "health": 45.0,
+        "speed": 1.8,
+        "shape": {
+          "x": 100.0,
+          "y": 140.0,
+          "w": 40.0,
+          "h": 20.0
+        },
+        "dir": "Left",
+        "cash_value": 22,
+        "instance": 24
+      }
+    ],
+    "max_enemies": 25,
+    "spawn_rate": 2.0,
     "last_spawn_time": 0.0,
     "max_duration": 0.0
   }
