@@ -21,7 +21,6 @@ pub struct GameState
     pub config : Config,
     pub wave : Wave,
     enemy_instance_count: i32,
-    pub cash : i32
 }
 
 impl GameState {
@@ -41,7 +40,6 @@ impl GameState {
         let config = Config{screen_width, screen_height};
         let player = Player::new(config.screen_width, config.screen_height);
         let enemy_instance_count = 0;
-        let cash = 0;
         GameState{
             player,
             bullets,
@@ -49,7 +47,6 @@ impl GameState {
             wave,
             config,
             enemy_instance_count,
-            cash
         }
     }
 
@@ -83,10 +80,10 @@ impl GameState {
         }
         for enemy in self.enemies.iter_mut() {
             if enemy.health <= 0.0 {
-                self.cash += enemy.cash_value;
+                self.player.cash += enemy.cash_value;
                 continue;
             }
-            enemy.r#move(self.config.screen_width);
+            enemy.r#move(self.wave.get_wave_line_height());
         }
         self.enemies.retain(|e| e.health > 0.0);
     }

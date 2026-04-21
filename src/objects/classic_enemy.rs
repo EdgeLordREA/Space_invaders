@@ -1,4 +1,4 @@
-
+use macroquad::window::screen_width;
 /// Classic Enemy module.
 /// 
 /// Contains the ClassicEnemy struct representing a basic enemy type
@@ -105,8 +105,9 @@ impl ClassicEnemy
     /// 
     /// The enemy moves horizontally until it hits a screen edge,
     /// then reverses direction and moves downward by ENEMY_LINE_HEIGHT.
-    pub fn r#move(&mut self, width : f32)
+    pub fn r#move(&mut self,line_height : f32)
     {
+        let width = screen_width();
         if let Direction::Right = self.dir
         {
             self.shape.x = self.shape.x + self.speed;
@@ -114,7 +115,7 @@ impl ClassicEnemy
             {
                 self.shape.x = width - self.shape.w;
                 self.dir = Direction::Left;
-                self.shape.y += crate::constants::ENEMY_LINE_HEIGHT;
+                self.shape.y += line_height;
             }
         }
         if let Direction::Left = self.dir
@@ -124,7 +125,7 @@ impl ClassicEnemy
             {
                 self.shape.x = 0.0;
                 self.dir = Direction::Right;
-                self.shape.y += crate::constants::ENEMY_LINE_HEIGHT;
+                self.shape.y += line_height;
             }
         }
     }

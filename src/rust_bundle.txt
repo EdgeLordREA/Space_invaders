@@ -130,11 +130,12 @@ impl Rect {
 FILE: ./functionals/waveloader.rs
 ========================================
 
+use std::collections::VecDeque;
 use std::fs::{read_to_string, File};
 use std::io::Write;
 use crate::objects::wave::Wave;
 
-pub fn load_waves(filename: &str) -> Vec<Wave> {
+pub fn load_waves(filename: &str) -> VecDeque<Wave> {
     let data = read_to_string(filename)
         .expect("Unable to read wave file");
 
@@ -142,7 +143,7 @@ pub fn load_waves(filename: &str) -> Vec<Wave> {
     let waves: Vec<Wave> = serde_json::from_str(&data)
         .expect("JSON was not well-formatted");
 
-    waves
+    waves.into()
 }
 
 /// Saves waves to a JSON file with pretty-printing.
@@ -425,95 +426,101 @@ FILE: ./objects/wave.rs
 //! Contains the Wave struct for managing groups of enemies
 //! that appear together during gameplay.
 
-use std::collections::VecDeque;
-use serde::{Deserialize, Serialize};
 use crate::objects::classic_enemy::ClassicEnemy;
+use serde::{Deserialize, Serialize};
+use std::collections::VecDeque;
 
 /// A wave of enemies to be spawned and managed together.
-/// 
+///
 /// Contains a collection of enemies and wave configuration parameters.
 #[derive(Debug, Deserialize, Serialize)]
-pub struct Wave{
+pub struct Wave {
     /// Collection of enemies in this wave
-    pub enemies : VecDeque<ClassicEnemy>,
+    pub enemies: VecDeque<ClassicEnemy>,
     /// Maximum number of enemies allowed in this wave
-    max_enemies : i32,
+    max_enemies: i32,
     ///enemies per second
-    spawn_rate : f32,
-    last_spawn_time : f32,
+    spawn_rate: f32,
+    last_spawn_time: f32,
     /// Maximum duration for this wave in seconds
-    max_duration : f32,
+    max_duration: f32,
+    wave_line_height: f32,
 }
 
 impl Wave {
     pub fn new() -> Wave {
-        Wave{
-            enemies : VecDeque::new(),
-            max_enemies : 0,
-            spawn_rate : 0.0,
-            last_spawn_time : 0.0,
-            max_duration : 0.0
+        Wave {
+            enemies: VecDeque::new(),
+            max_enemies: 0,
+            spawn_rate: 0.0,
+            last_spawn_time: 0.0,
+            max_duration: 0.0,
+            wave_line_height: 0.0,
         }
     }
 
-    pub fn deserialize(enemies : Vec<ClassicEnemy>, max_enemies : i32, spawn_rate : f32, max_duration : f32) -> Wave
-    {
+    pub fn deserialize(
+        enemies: Vec<ClassicEnemy>,
+        max_enemies: i32,
+        spawn_rate: f32,
+        max_duration: f32,
+        wave_line_height: f32,
+    ) -> Wave {
         let mut wv = Self::new();
         wv.set_enemies(enemies);
         wv.set_max_enemies(max_enemies);
         wv.set_spawn_rate(spawn_rate);
         wv.set_max_duration(max_duration);
+        wv.set_wave_line_height(wave_line_height);
         wv.last_spawn_time = 0.0;
         wv
     }
 
-
-
-    pub fn run_wave(&mut self, delta : f32, enemy_count : i32) -> Option<ClassicEnemy>
-    {
+    pub fn run_wave(&mut self, delta: f32, enemy_count: i32) -> Option<ClassicEnemy> {
         if self.enemies.is_empty() {
             return None;
         }
         self.last_spawn_time += delta;
         let seconds_per_enemy = 1.0 / self.spawn_rate;
-        if self.last_spawn_time > seconds_per_enemy && enemy_count < self.max_enemies{
+        if self.last_spawn_time > seconds_per_enemy && enemy_count < self.max_enemies {
             self.last_spawn_time -= seconds_per_enemy;
             self.enemies.pop_front()
-        }
-        else{
+        } else {
             None
         }
     }
 
-    pub fn set_enemies(&mut self, enemies : Vec<ClassicEnemy>)
-    {
+    pub fn set_enemies(&mut self, enemies: Vec<ClassicEnemy>) {
         self.enemies = enemies.into();
     }
 
-    pub fn add_enemies(&mut self, enemy : ClassicEnemy)
-    {
+    pub fn add_enemies(&mut self, enemy: ClassicEnemy) {
         self.enemies.push_back(enemy)
     }
-    pub fn set_max_enemies(&mut self, max_enemies : i32)
-    {
+    pub fn set_max_enemies(&mut self, max_enemies: i32) {
         self.max_enemies = max_enemies;
     }
 
-    pub fn set_spawn_rate(&mut self, spawn_rate : f32)
-    {
+    pub fn set_spawn_rate(&mut self, spawn_rate: f32) {
         self.spawn_rate = spawn_rate;
     }
 
-    pub fn set_max_duration(&mut self, max_duration : f32)
-    {
+    pub fn set_max_duration(&mut self, max_duration: f32) {
         self.max_duration = max_duration;
     }
+    pub fn set_wave_line_height(&mut self, wave_line_height: f32) {
+        self.wave_line_height = wave_line_height;
+    }
+    pub fn get_wave_line_height(&self) -> f32 {
+        self.wave_line_height
+    }
 
-    pub fn is_complete(&self) -> bool
-    {
+    pub fn is_complete(&self) -> bool {
         self.enemies.is_empty()
     }
+
 }
+
 
 ========================================
 FILE: ./objects/player.rs
@@ -547,7 +554,8 @@ pub struct Player
     bullet_radius: f32,
     /// Damage dealt by player's bullets
     bullet_damage: f32,
-    bullet_pen : i32
+    bullet_pen : i32,
+    pub cash : i32
 }
 impl Player
 {
@@ -614,6 +622,7 @@ impl Player
             bullet_speed: Vec2::new(0.0, -100.0), // speed and direction of bullet
             bullet_radius: 4.0, // size of bullet
             bullet_pen : 1, //number of enemies the bullet is allowed to hit
+            cash : 0
         }
     }
     
@@ -624,6 +633,27 @@ impl Player
     pub fn position(&self) -> Vec2
     {
         Vec2::new(self.shape.x, self.shape.y)
+    }
+}
+
+========================================
+FILE: ./objects/upgrade.rs
+========================================
+
+use crate::objects::player::Player;
+use crate::UI::button::Button;
+
+pub struct Upgrade {
+    button: Button,
+    name: String,
+    cost: i32,
+    upgrade : i32
+}
+
+impl Upgrade {
+    pub fn do_upgrade(&self, player : &mut Player)
+    {
+        
     }
 }
 
@@ -726,7 +756,7 @@ pub enum Source{
 FILE: ./objects/classic_enemy.rs
 ========================================
 
-
+use macroquad::window::screen_width;
 /// Classic Enemy module.
 /// 
 /// Contains the ClassicEnemy struct representing a basic enemy type
@@ -833,8 +863,9 @@ impl ClassicEnemy
     /// 
     /// The enemy moves horizontally until it hits a screen edge,
     /// then reverses direction and moves downward by ENEMY_LINE_HEIGHT.
-    pub fn r#move(&mut self, width : f32)
+    pub fn r#move(&mut self,line_height : f32)
     {
+        let width = screen_width();
         if let Direction::Right = self.dir
         {
             self.shape.x = self.shape.x + self.speed;
@@ -842,7 +873,7 @@ impl ClassicEnemy
             {
                 self.shape.x = width - self.shape.w;
                 self.dir = Direction::Left;
-                self.shape.y += crate::constants::ENEMY_LINE_HEIGHT;
+                self.shape.y += line_height;
             }
         }
         if let Direction::Left = self.dir
@@ -852,7 +883,7 @@ impl ClassicEnemy
             {
                 self.shape.x = 0.0;
                 self.dir = Direction::Right;
-                self.shape.y += crate::constants::ENEMY_LINE_HEIGHT;
+                self.shape.y += line_height;
             }
         }
     }
@@ -887,64 +918,71 @@ pub mod player;
 pub mod bullet;
 pub mod classic_enemy;
 pub mod wave;
+pub mod upgrade;
 
 ========================================
-FILE: ./managers/wavemanager.rs
+FILE: ./lib.rs
 ========================================
 
-/// Wave Manager module.
-/// 
-/// Contains the WaveManager struct for controlling enemy wave spawning
-/// and managing wave progression throughout the game.
+// src/lib.rs
+pub mod gamestate;
+pub mod objects;
+pub mod functionals;
+pub mod UI;
 
-use crate::objects::wave;
+========================================
+FILE: ./UI/button.rs
+========================================
 
-/// Manages enemy wave spawning and progression.
-/// 
-/// Tracks current wave state, enemy counts, and spawn timing.
-struct WaveManager {
-    /// Collection of all wave configurations
-    waves : Vec<wave::Wave>,
-    /// Index of the currently active wave
-    current_wave: i32,
-    /// Maximum number of enemies allowed at once
-    max_enemies: i32,
-    /// Current number of active enemies
-    current_enemies: i32,
-    /// Delay between enemy spawns in seconds
-    spawn_delay : f32,
-    /// Current state of wave progression
-    pub wave_state : WaveState
+use macroquad::color::{Color, WHITE};
+use macroquad::shapes::draw_rectangle;
+use macroquad::text::draw_text;
+use crate::functionals::rect::Rect;
+use crate::functionals::vec2::Vec2;
+
+pub struct Button
+{
+    button : Rect,
+    text : String,
+    color: Color
 }
 
-/// Represents the current state of wave management.
-pub enum WaveState {
-    /// Currently spawning enemies for the wave
-    Spawning,
-    /// Wave is active with all enemies spawned
-    InProgress,
-    /// Transitioning between waves
-    Transitioning,
+impl Button {
+    pub fn new(x : f32, y : f32, w : f32, h : f32, text : String, color : Color) -> Button {
+        Button{
+            button : Rect::new(x, y, w, h),
+            text,
+            color
+        }
+    }
+
+    pub fn clicked(&self) -> bool {
+        let mouse_pos = macroquad::input::mouse_position();
+        if self.button.contains(Vec2::new(mouse_pos.0, mouse_pos.1)) {
+            return true;
+        }
+        false
+    }
+    
+    pub fn draw(&self)
+    {
+        draw_rectangle(self.button.x, self.button.y, self.button.w, self.button.h, self.color);
+        draw_text(&*self.text, self.button.x, self.button.y, 10.0, WHITE);
+    }
 }
-impl WaveManager {}
 
 ========================================
-FILE: ./managers/mod.rs
+FILE: ./UI/mod.rs
 ========================================
 
-pub mod wavemanager;
+pub mod button;
 
 ========================================
 FILE: ./main.rs
 ========================================
 
-pub mod gamestate;
-mod objects;
-pub mod constants;
-pub mod managers;
-pub mod functionals;
+use Space_invaders;
 
-use crate::gamestate::GameState;
 use macroquad::color::*;
 use macroquad::input::{is_key_down, KeyCode};
 use macroquad::prelude::draw_rectangle;
@@ -952,7 +990,9 @@ use macroquad::shapes::draw_circle;
 use macroquad::text::draw_text;
 use macroquad::time::get_frame_time;
 use macroquad::window::{clear_background, next_frame, screen_height, screen_width};
-use functionals::actions;
+use Space_invaders::functionals::actions;
+use Space_invaders::functionals::waveloader::load_waves;
+use Space_invaders::gamestate::GameState;
 
 /// Main entry point for the game application.
 /// 
@@ -963,6 +1003,8 @@ use functionals::actions;
 #[macroquad::main("BasicShapes")]
 async fn main() {
     let gamestate = &mut GameState::new(screen_width(), screen_height());
+    let mut all_waves = load_waves("waves.json");
+    gamestate.wave = all_waves.pop_front().unwrap();
     loop {
         if !gamestate.wave_complete() {
             let delta = get_frame_time();
@@ -970,9 +1012,18 @@ async fn main() {
             gamestate.run_state(delta);
             render_gamestate(gamestate);
         }
-
+        else {
+            if take_break(gamestate)
+            {
+                gamestate.wave = all_waves.pop_front().unwrap();
+            }
+        }
         next_frame().await
     }
+}
+
+fn take_break(gs : &mut GameState) -> bool{
+    true
 }
 
 /// Handles player input and updates the game state accordingly.
@@ -1020,7 +1071,7 @@ fn render_gamestate(gamestate: &GameState) {
         RED,
     );
 
-    draw_text(&format!("{}", gamestate.cash), 10.0, 30.0, 20.0, RED
+    draw_text(&format!("{}", gamestate.player.cash), 10.0, 30.0, 20.0, RED
     );
 
     for x in &gamestate.bullets {
@@ -1036,6 +1087,12 @@ fn render_gamestate(gamestate: &GameState) {
     }
 }
 
+fn render_shop(gs : &mut GameState)
+{
+
+}
+
+//fn load_upgrades() -> Vec2
 
 ========================================
 FILE: ./gamestate.rs
@@ -1064,7 +1121,6 @@ pub struct GameState
     pub config : Config,
     pub wave : Wave,
     enemy_instance_count: i32,
-    pub cash : i32
 }
 
 impl GameState {
@@ -1084,31 +1140,14 @@ impl GameState {
         let config = Config{screen_width, screen_height};
         let player = Player::new(config.screen_width, config.screen_height);
         let enemy_instance_count = 0;
-        let cash = 0;
-        let mut gs = GameState{
+        GameState{
             player,
             bullets,
             enemies,
             wave,
             config,
             enemy_instance_count,
-            cash
-        };
-        gs.load_enemies();
-        gs
-    }
-    
-    pub fn load_enemies(&mut self)
-    {
-        for _ in 0..5 {
-
-            let enemy = ClassicEnemy::new(50.0, 1.2, Vec2::new(100.0, 100.0), Vec2::new(40.0, 20.0), Direction::Right, 10, self.enemy_instance_count);
-            self.wave.add_enemies(enemy);
-            self.enemy_instance_count += 1;
         }
-        self.wave.set_max_enemies(5);
-        self.wave.set_spawn_rate(1.0);
-        self.wave.set_max_duration(999.0);
     }
 
     /// Updates all game entities for the current frame.
@@ -1131,7 +1170,7 @@ impl GameState {
 
     pub fn wave_complete(&self) -> bool
     {
-        self.wave.enemies.is_empty() && self.wave.is_complete()
+        self.enemies.is_empty() && self.wave.is_complete()
     }
 
     fn run_enemies(&mut self, delta : f32) {
@@ -1141,10 +1180,10 @@ impl GameState {
         }
         for enemy in self.enemies.iter_mut() {
             if enemy.health <= 0.0 {
-                self.cash += enemy.cash_value;
+                self.player.cash += enemy.cash_value;
                 continue;
             }
-            enemy.r#move(self.config.screen_width);
+            enemy.r#move(self.wave.get_wave_line_height());
         }
         self.enemies.retain(|e| e.health > 0.0);
     }
@@ -1168,13 +1207,60 @@ impl GameState {
 }
 
 ========================================
-FILE: ./constants.rs
+FILE: ./bin/wave_gen.rs
 ========================================
 
-/// Game constants module.
-/// 
-/// Contains global constant values used throughout the game.
+use Space_invaders::objects::wave::Wave;
+use Space_invaders::objects::classic_enemy::{ClassicEnemy, Direction};
+use Space_invaders::functionals::vec2::Vec2;
+use Space_invaders::functionals::waveloader::save_waves;
 
-/// Height offset in pixels when enemies change direction and drop down.
-pub const ENEMY_LINE_HEIGHT : f32 = 100.0;
+fn main() {
+    let mut all_waves = Vec::new();
+
+    // Configuration for 10 Unique Waves
+    let wave_configs = vec![
+        // (count, health, speed, rate, label)
+        (5,  50.0,  1.2, 1.0, "Wave 1: The Scouts"),
+        (8,  40.0,  1.5, 1.5, "Wave 2: The Vanguard"),
+        (12, 30.0,  2.0, 2.5, "Wave 3: The Swarm"),
+        (4,  150.0, 0.8, 0.5, "Wave 4: Heavy Armor"),
+        (10, 60.0,  1.4, 1.2, "Wave 5: Reinforcements"),
+        (15, 25.0,  2.5, 3.0, "Wave 6: Sonic Blitz"),
+        (6,  100.0, 1.1, 0.8, "Wave 7: The Guardians"),
+        (20, 20.0,  2.2, 4.0, "Wave 8: Locust Storm"),
+        (3,  300.0, 0.5, 0.3, "Wave 9: The Goliaths"),
+        (25, 45.0,  1.8, 2.0, "Wave 10: The Final Push"),
+    ];
+
+    for (idx, (count, hp, speed, rate, _label)) in wave_configs.into_iter().enumerate() {
+        let mut wave = Wave::new();
+        wave.set_max_enemies(count);
+        wave.set_spawn_rate(rate);
+
+        for i in 0..count {
+            // Alternating starting directions for even/odd waves
+            let start_dir = if idx % 2 == 0 { Direction::Right } else { Direction::Left };
+
+            // Staggering the vertical starting height slightly for variety
+            let start_y = 50.0 + (idx as f32 * 10.0);
+
+            let enemy = ClassicEnemy::new(
+                hp,
+                speed,
+                Vec2::new(100.0, start_y),
+                Vec2::new(40.0, 20.0),
+                start_dir,
+                (hp * 0.5) as i32, // Cash value scaled to health
+                i
+            );
+            wave.add_enemies(enemy);
+        }
+        all_waves.push(wave);
+    }
+
+    // Save using your existing waveloader logic
+    save_waves(&all_waves, "waves.json");
+    println!("Generated 10 unique waves in waves.json successfully!");
+}
 

@@ -88,7 +88,7 @@ fn render_gamestate(gamestate: &GameState) {
         RED,
     );
 
-    draw_text(&format!("{}", gamestate.cash), 10.0, 30.0, 20.0, RED
+    draw_text(&format!("{}", gamestate.player.cash), 10.0, 30.0, 20.0, RED
     );
 
     for x in &gamestate.bullets {
@@ -103,3 +103,10 @@ fn render_gamestate(gamestate: &GameState) {
         draw_rectangle(pos.x, pos.y, x.shape.w, x.shape.h, RED);
     }
 }
+
+fn render_shop(gs : &mut GameState)
+{
+
+}
+
+//fn load_upgrades() -> Vec2

@@ -70,7 +70,8 @@
     "max_enemies": 5,
     "spawn_rate": 1.0,
     "last_spawn_time": 0.0,
-    "max_duration": 0.0
+    "max_duration": 0.0,
+    "wave_line_height": 30.0
   },
   {
     "enemies": [
@@ -182,7 +183,8 @@
     "max_enemies": 8,
     "spawn_rate": 1.5,
     "last_spawn_time": 0.0,
-    "max_duration": 0.0
+    "max_duration": 0.0,
+    "wave_line_height": 30.0
   },
   {
     "enemies": [
@@ -346,7 +348,8 @@
     "max_enemies": 12,
     "spawn_rate": 2.5,
     "last_spawn_time": 0.0,
-    "max_duration": 0.0
+    "max_duration": 0.0,
+    "wave_line_height": 25.0
   },
   {
     "enemies": [
@@ -406,7 +409,8 @@
     "max_enemies": 4,
     "spawn_rate": 0.5,
     "last_spawn_time": 0.0,
-    "max_duration": 0.0
+    "max_duration": 0.0,
+    "wave_line_height": 40.0
   },
   {
     "enemies": [
@@ -544,7 +548,8 @@
     "max_enemies": 10,
     "spawn_rate": 1.2,
     "last_spawn_time": 0.0,
-    "max_duration": 0.0
+    "max_duration": 0.0,
+    "wave_line_height": 30.0
   },
   {
     "enemies": [
@@ -747,7 +752,8 @@
     "max_enemies": 15,
     "spawn_rate": 3.0,
     "last_spawn_time": 0.0,
-    "max_duration": 0.0
+    "max_duration": 0.0,
+    "wave_line_height": 20.0
   },
   {
     "enemies": [
@@ -833,7 +839,8 @@
     "max_enemies": 6,
     "spawn_rate": 0.8,
     "last_spawn_time": 0.0,
-    "max_duration": 0.0
+    "max_duration": 0.0,
+    "wave_line_height": 35.0
   },
   {
     "enemies": [
@@ -1101,7 +1108,8 @@
     "max_enemies": 20,
     "spawn_rate": 4.0,
     "last_spawn_time": 0.0,
-    "max_duration": 0.0
+    "max_duration": 0.0,
+    "wave_line_height": 25.0
   },
   {
     "enemies": [
@@ -1148,7 +1156,8 @@
     "max_enemies": 3,
     "spawn_rate": 0.3,
     "last_spawn_time": 0.0,
-    "max_duration": 0.0
+    "max_duration": 0.0,
+    "wave_line_height": 50.0
   },
   {
     "enemies": [
@@ -1481,6 +1490,7 @@
     "max_enemies": 25,
     "spawn_rate": 2.0,
     "last_spawn_time": 0.0,
-    "max_duration": 0.0
+    "max_duration": 0.0,
+    "wave_line_height": 30.0
   }
 ]

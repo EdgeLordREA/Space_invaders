@@ -26,7 +26,8 @@ pub struct Player
     bullet_radius: f32,
     /// Damage dealt by player's bullets
     bullet_damage: f32,
-    bullet_pen : i32
+    bullet_pen : i32,
+    pub cash : i32
 }
 impl Player
 {
@@ -93,6 +94,7 @@ impl Player
             bullet_speed: Vec2::new(0.0, -100.0), // speed and direction of bullet
             bullet_radius: 4.0, // size of bullet
             bullet_pen : 1, //number of enemies the bullet is allowed to hit
+            cash : 0
         }
     }
     
