@@ -4,15 +4,16 @@ use macroquad::text::draw_text;
 use crate::functionals::rect::Rect;
 use crate::functionals::vec2::Vec2;
 
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Button
 {
     button : Rect,
-    text : String,
+    text: &'static str,
     color: Color
 }
 
 impl Button {
-    pub fn new(x : f32, y : f32, w : f32, h : f32, text : String, color : Color) -> Button {
+    pub fn new(x: f32, y: f32, w: f32, h: f32, text: &'static str, color: Color) -> Button {
         Button{
             button : Rect::new(x, y, w, h),
             text,
@@ -21,9 +22,11 @@ impl Button {
     }
 
     pub fn clicked(&self) -> bool {
-        let mouse_pos = macroquad::input::mouse_position();
-        if self.button.contains(Vec2::new(mouse_pos.0, mouse_pos.1)) {
-            return true;
+        if macroquad::input::is_mouse_button_pressed(macroquad::input::MouseButton::Left) {
+            let mouse_pos = macroquad::input::mouse_position();
+            if self.button.contains(Vec2::new(mouse_pos.0, mouse_pos.1)) {
+                return true;
+            }
         }
         false
     }

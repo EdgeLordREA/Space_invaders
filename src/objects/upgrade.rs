@@ -1,11 +1,13 @@
-use crate::objects::player::Player;
+use serde::{Deserialize, Serialize};
+use crate::objects::player::{Player, PlayerStat};
 use crate::UI::button::Button;
 
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Upgrade {
-    button: Button,
-    name: String,
-    cost: i32,
-    upgrade : i32
+    pub button: Button,
+    pub player_stat: PlayerStat,
+    pub cost: i32,
+    pub upgrade : f32
 }
 
 impl Upgrade {

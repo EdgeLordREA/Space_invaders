@@ -3,13 +3,18 @@ use Space_invaders;
 use macroquad::color::*;
 use macroquad::input::{is_key_down, KeyCode};
 use macroquad::prelude::draw_rectangle;
+use macroquad::rand::ChooseRandom;
 use macroquad::shapes::draw_circle;
 use macroquad::text::draw_text;
 use macroquad::time::get_frame_time;
 use macroquad::window::{clear_background, next_frame, screen_height, screen_width};
+use rand;
 use Space_invaders::functionals::actions;
 use Space_invaders::functionals::waveloader::load_waves;
 use Space_invaders::gamestate::GameState;
+use Space_invaders::objects::player::PlayerStat;
+use Space_invaders::objects::upgrade::Upgrade;
+use Space_invaders::UI::button::Button;
 
 /// Main entry point for the game application.
 /// 
@@ -21,6 +26,8 @@ use Space_invaders::gamestate::GameState;
 async fn main() {
     let gamestate = &mut GameState::new(screen_width(), screen_height());
     let mut all_waves = load_waves("waves.json");
+    let mut all_upgrades = load_upgrades();
+    let mut available_upgrades: Vec<Upgrade> = Vec::new();
     gamestate.wave = all_waves.pop_front().unwrap();
     loop {
         if !gamestate.wave_complete() {
@@ -30,8 +37,22 @@ async fn main() {
             render_gamestate(gamestate);
         }
         else {
-            if take_break(gamestate)
+            if available_upgrades.is_empty() {
+                let mut all_upgrades_copy = all_upgrades.clone();
+
+                // Fisher-Yates shuffle using macroquad's random
+                for i in (1..all_upgrades_copy.len()).rev() {
+                    let j = macroquad::rand::gen_range(0, (i + 1) as i32) as usize;
+                    all_upgrades_copy.swap(i, j);
+                }
+
+                available_upgrades = all_upgrades_copy.into_iter().take(3).collect();
+            }
+            if !take_break(gamestate, &available_upgrades)
             {
+
+            }
+            else {
                 gamestate.wave = all_waves.pop_front().unwrap();
             }
         }
@@ -39,8 +60,62 @@ async fn main() {
     }
 }
 
-fn take_break(gs : &mut GameState) -> bool{
-    true
+fn load_upgrades() -> Vec<Upgrade> {
+    let mut upgrades = Vec::new();
+
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Health", GREEN),
+        player_stat: PlayerStat::Health,
+        cost: 50,
+        upgrade: 10.0,
+    });
+
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Attack Speed", GREEN),
+        player_stat: PlayerStat::AttackSpeed,
+        cost: 75,
+        upgrade: 0.1,
+    });
+
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Bullet Damage", GREEN),
+        player_stat: PlayerStat::BulletDamage,
+        cost: 100,
+        upgrade: 5.0,
+    });
+
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Bullet Speed", GREEN),
+        player_stat: PlayerStat::BulletSpeed,
+        cost: 60,
+        upgrade: 2.0,
+    });
+
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Bullet Radius", GREEN),
+        player_stat: PlayerStat::BulletRadius,
+        cost: 80,
+        upgrade: 0.5,
+    });
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Bullet Count", GREEN),
+        player_stat: PlayerStat::BulletCount,
+        cost: 300,
+        upgrade: 1.0,
+    });
+
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Bullet Penetration", GREEN),
+        player_stat: PlayerStat::BulletPen,
+        cost: 200,
+        upgrade: 1.0,
+    });
+    upgrades
+}
+
+fn take_break(gs : &mut GameState, upgrades : &Vec<Upgrade>) -> bool{
+
+    render_shop(gs, upgrades)
 }
 
 /// Handles player input and updates the game state accordingly.
@@ -104,9 +179,9 @@ fn render_gamestate(gamestate: &GameState) {
     }
 }
 
-fn render_shop(gs : &mut GameState)
+fn render_shop(gs : &mut GameState, Upgrades : &Vec<Upgrade>) -> bool
 {
-
+    clear_background(BLACK);
+    draw_text("Shop Time!", 100.0, 100.0, 50.0, RED );
+    false
 }
-
-//fn load_upgrades() -> Vec2

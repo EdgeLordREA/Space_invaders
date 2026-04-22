@@ -76,14 +76,18 @@ impl GameState {
     fn run_enemies(&mut self, delta : f32) {
         let x = self.wave.run_wave(delta, self.enemies.len() as i32);
         if x.is_some() {
-            self.enemies.push(x.unwrap());
+            let mut enemy = x.unwrap();
+            enemy.instance = self.enemy_instance_count;
+            self.enemy_instance_count+=1;
+            self.enemies.push(enemy);
         }
         for enemy in self.enemies.iter_mut() {
             if enemy.health <= 0.0 {
                 self.player.cash += enemy.cash_value;
                 continue;
             }
-            enemy.r#move(self.wave.get_wave_line_height());
+            else { enemy.r#move(self.wave.get_wave_line_height()); }
+
         }
         self.enemies.retain(|e| e.health > 0.0);
     }

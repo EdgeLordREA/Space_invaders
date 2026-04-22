@@ -43,7 +43,7 @@ impl From<i8> for Direction
         {
             0 => Direction::Left,
             1 => Direction::Right,
-            _ => panic!("Invalid direction value: {}", i)
+            _ => Direction::Right,
         }
     }
 }

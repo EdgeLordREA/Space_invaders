@@ -526,7 +526,7 @@ impl Wave {
 FILE: ./objects/player.rs
 ========================================
 
-use macroquad::math::Rect;
+use crate::functionals::rect::Rect;
 /// Player character module.
 /// 
 /// Contains the Player struct and related functionality for controlling
@@ -550,6 +550,7 @@ pub struct Player
     pub atk_cooldown : f32,
     /// Velocity vector for spawned bullets
     bullet_speed : Vec2,
+    bullet_count : i32,
     /// Dimensions of spawned bullets
     bullet_radius: f32,
     /// Damage dealt by player's bullets
@@ -557,6 +558,8 @@ pub struct Player
     bullet_pen : i32,
     pub cash : i32
 }
+
+
 impl Player
 {
     /// Checks if the player can currently attack.
@@ -574,14 +577,32 @@ impl Player
     /// * `bullets` - Mutable reference to the vector of active bullets
     /// 
     /// Sets the attack cooldown and spawns a bullet from the player's center position.
-    pub fn attack(&mut self,  bullets : &mut Vec<Bullet>)
-    {
+    pub fn attack(&mut self, bullets: &mut Vec<Bullet>) {
         self.atk_cooldown = 1.0 / self.atk_speed;
         let damage = self.calculate_damage();
         let center = self.shape.center();
-        let origin = Vec2::new(center.x , center.y);
-        let bullet = Bullet::new(origin, self.bullet_radius, self.bullet_speed, Source::Player, damage, self.bullet_pen);
-        bullets.push(bullet);
+        let bullet_spacing = self.bullet_radius * 2.0;
+        // Total width of the bullet line
+        let total_width = (self.bullet_count.saturating_sub(1) as f32) * bullet_spacing;
+        // Start position so the line is centered: center.x - half_width
+        let start_x = center.x - total_width / 2.0;
+        let middle = (self.bullet_count - 1) as f32 / 2.0;
+        for i in 0..self.bullet_count {
+            let y_offset = (i as f32 - middle).abs() * 10.0;
+            let x = start_x + (i as f32) * bullet_spacing;
+            let y = center.y - 20.0 + y_offset; // Same row as player center
+            let origin = Vec2::new(x, y);
+
+            let bullet = Bullet::new(
+                origin,
+                self.bullet_radius,
+                self.bullet_speed,
+                Source::Player,
+                damage,
+                self.bullet_pen
+            );
+            bullets.push(bullet);
+        }
     }
 
     /// Calculates the damage for the player's attack.
@@ -614,12 +635,13 @@ impl Player
     /// A new Player positioned at the bottom center of the screen with default stats.
     pub fn new(screen_width : f32, screen_height : f32) -> Player {
         Player {
-            shape : Rect::new(screen_width/2.0, screen_height-10.0, 30.0, 20.0), //size of player
+            shape : Rect::new(screen_width/2.0, screen_height-20.0, 30.0, 20.0), //size of player
             speed: 200.0,                  // Base movement speed
             atk_speed: 8.0,                // 1 attack per second
             atk_cooldown: 0.0,             // Ready to attack immediately
             bullet_damage: 10.0,                     // Base damage
             bullet_speed: Vec2::new(0.0, -100.0), // speed and direction of bullet
+            bullet_count: 1,
             bullet_radius: 4.0, // size of bullet
             bullet_pen : 1, //number of enemies the bullet is allowed to hit
             cash : 0
@@ -634,20 +656,38 @@ impl Player
     {
         Vec2::new(self.shape.x, self.shape.y)
     }
+
+    pub fn buy_stat(&self, stat : PlayerStat, cost : i32, value : f32) -> bool
+    {
+        self.cash >= cost
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum PlayerStat{
+    Health,
+    AttackSpeed,
+    BulletDamage,
+    BulletSpeed,
+    BulletRadius,
+    BulletCount,
+    BulletPen,
 }
 
 ========================================
 FILE: ./objects/upgrade.rs
 ========================================
 
-use crate::objects::player::Player;
+use serde::{Deserialize, Serialize};
+use crate::objects::player::{Player, PlayerStat};
 use crate::UI::button::Button;
 
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Upgrade {
-    button: Button,
-    name: String,
-    cost: i32,
-    upgrade : i32
+    pub button: Button,
+    pub player_stat: PlayerStat,
+    pub cost: i32,
+    pub upgrade : f32
 }
 
 impl Upgrade {
@@ -801,7 +841,7 @@ impl From<i8> for Direction
         {
             0 => Direction::Left,
             1 => Direction::Right,
-            _ => panic!("Invalid direction value: {}", i)
+            _ => Direction::Right,
         }
     }
 }
@@ -940,15 +980,16 @@ use macroquad::text::draw_text;
 use crate::functionals::rect::Rect;
 use crate::functionals::vec2::Vec2;
 
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Button
 {
     button : Rect,
-    text : String,
+    text: &'static str,
     color: Color
 }
 
 impl Button {
-    pub fn new(x : f32, y : f32, w : f32, h : f32, text : String, color : Color) -> Button {
+    pub fn new(x: f32, y: f32, w: f32, h: f32, text: &'static str, color: Color) -> Button {
         Button{
             button : Rect::new(x, y, w, h),
             text,
@@ -957,9 +998,11 @@ impl Button {
     }
 
     pub fn clicked(&self) -> bool {
-        let mouse_pos = macroquad::input::mouse_position();
-        if self.button.contains(Vec2::new(mouse_pos.0, mouse_pos.1)) {
-            return true;
+        if macroquad::input::is_mouse_button_pressed(macroquad::input::MouseButton::Left) {
+            let mouse_pos = macroquad::input::mouse_position();
+            if self.button.contains(Vec2::new(mouse_pos.0, mouse_pos.1)) {
+                return true;
+            }
         }
         false
     }
@@ -986,13 +1029,18 @@ use Space_invaders;
 use macroquad::color::*;
 use macroquad::input::{is_key_down, KeyCode};
 use macroquad::prelude::draw_rectangle;
+use macroquad::rand::ChooseRandom;
 use macroquad::shapes::draw_circle;
 use macroquad::text::draw_text;
 use macroquad::time::get_frame_time;
 use macroquad::window::{clear_background, next_frame, screen_height, screen_width};
+use rand::seq::SliceRandom;
 use Space_invaders::functionals::actions;
 use Space_invaders::functionals::waveloader::load_waves;
 use Space_invaders::gamestate::GameState;
+use Space_invaders::objects::player::PlayerStat;
+use Space_invaders::objects::upgrade::Upgrade;
+use Space_invaders::UI::button::Button;
 
 /// Main entry point for the game application.
 /// 
@@ -1004,6 +1052,8 @@ use Space_invaders::gamestate::GameState;
 async fn main() {
     let gamestate = &mut GameState::new(screen_width(), screen_height());
     let mut all_waves = load_waves("waves.json");
+    let mut all_upgrades = load_upgrades();
+    let mut available_upgrades: Vec<Upgrade> = Vec::new();
     gamestate.wave = all_waves.pop_front().unwrap();
     loop {
         if !gamestate.wave_complete() {
@@ -1013,8 +1063,18 @@ async fn main() {
             render_gamestate(gamestate);
         }
         else {
-            if take_break(gamestate)
+            if available_upgrades.is_empty() {
+                let mut rng = macroquad::rand::srand(macroquad::time::get_time() as u64);
+                // Use slice sampling to get 3 unique items
+                let mut all_upgrades_copy = all_upgrades.clone();
+                SliceRandom::shuffle(&mut all_upgrades_copy, rng);
+                available_upgrades = all_upgrades_copy.into_iter().take(3).collect();
+            }
+            if !take_break(gamestate)
             {
+
+            }
+            else {
                 gamestate.wave = all_waves.pop_front().unwrap();
             }
         }
@@ -1022,8 +1082,62 @@ async fn main() {
     }
 }
 
-fn take_break(gs : &mut GameState) -> bool{
-    true
+fn load_upgrades() -> Vec<Upgrade> {
+    let mut upgrades = Vec::new();
+
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Health".to_string(), GREEN),
+        player_stat: PlayerStat::Health,
+        cost: 50,
+        upgrade: 10.0,
+    });
+
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Attack Speed".to_string(), GREEN),
+        player_stat: PlayerStat::AttackSpeed,
+        cost: 75,
+        upgrade: 0.1,
+    });
+
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Bullet Damage".to_string(), GREEN),
+        player_stat: PlayerStat::BulletDamage,
+        cost: 100,
+        upgrade: 5.0,
+    });
+
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Bullet Speed".to_string(), GREEN),
+        player_stat: PlayerStat::BulletSpeed,
+        cost: 60,
+        upgrade: 2.0,
+    });
+
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Bullet Radius".to_string(), GREEN),
+        player_stat: PlayerStat::BulletRadius,
+        cost: 80,
+        upgrade: 0.5,
+    });
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Bullet Count".to_string(), GREEN),
+        player_stat: PlayerStat::BulletCount,
+        cost: 300,
+        upgrade: 1.0,
+    });
+
+    upgrades.push(Upgrade {
+        button: Button::new(0.0, 0.0, 200.0, 100.0, "Bullet Penetration".to_string(), GREEN),
+        player_stat: PlayerStat::BulletPen,
+        cost: 200,
+        upgrade: 1.0,
+    });
+    upgrades
+}
+
+fn take_break(gs : &mut GameState, upgrades : Vec<Upgrade>) -> bool{
+
+    render_shop(gs)
 }
 
 /// Handles player input and updates the game state accordingly.
@@ -1087,12 +1201,12 @@ fn render_gamestate(gamestate: &GameState) {
     }
 }
 
-fn render_shop(gs : &mut GameState)
+fn render_shop(gs : &mut GameState, Upgrades : Vec<Upgrade>) -> bool
 {
-
+    clear_background(BLACK);
+    draw_text("Shop Time!", 100.0, 100.0, 50.0, RED );
+    false
 }
-
-//fn load_upgrades() -> Vec2
 
 ========================================
 FILE: ./gamestate.rs
@@ -1176,14 +1290,18 @@ impl GameState {
     fn run_enemies(&mut self, delta : f32) {
         let x = self.wave.run_wave(delta, self.enemies.len() as i32);
         if x.is_some() {
-            self.enemies.push(x.unwrap());
+            let mut enemy = x.unwrap();
+            enemy.instance = self.enemy_instance_count;
+            self.enemy_instance_count+=1;
+            self.enemies.push(enemy);
         }
         for enemy in self.enemies.iter_mut() {
             if enemy.health <= 0.0 {
                 self.player.cash += enemy.cash_value;
                 continue;
             }
-            enemy.r#move(self.wave.get_wave_line_height());
+            else { enemy.r#move(self.wave.get_wave_line_height()); }
+
         }
         self.enemies.retain(|e| e.health > 0.0);
     }
@@ -1218,31 +1336,28 @@ use Space_invaders::functionals::waveloader::save_waves;
 fn main() {
     let mut all_waves = Vec::new();
 
-    // Configuration for 10 Unique Waves
+    // Configuration: (count, health, speed, rate, line_height, label)
     let wave_configs = vec![
-        // (count, health, speed, rate, label)
-        (5,  50.0,  1.2, 1.0, "Wave 1: The Scouts"),
-        (8,  40.0,  1.5, 1.5, "Wave 2: The Vanguard"),
-        (12, 30.0,  2.0, 2.5, "Wave 3: The Swarm"),
-        (4,  150.0, 0.8, 0.5, "Wave 4: Heavy Armor"),
-        (10, 60.0,  1.4, 1.2, "Wave 5: Reinforcements"),
-        (15, 25.0,  2.5, 3.0, "Wave 6: Sonic Blitz"),
-        (6,  100.0, 1.1, 0.8, "Wave 7: The Guardians"),
-        (20, 20.0,  2.2, 4.0, "Wave 8: Locust Storm"),
-        (3,  300.0, 0.5, 0.3, "Wave 9: The Goliaths"),
-        (25, 45.0,  1.8, 2.0, "Wave 10: The Final Push"),
+        (5,  50.0,  1.2, 1.0, 30.0, "Wave 1: The Scouts"),
+        (8,  40.0,  1.5, 1.5, 30.0, "Wave 2: The Vanguard"),
+        (12, 30.0,  2.0, 2.5, 25.0, "Wave 3: The Swarm"),
+        (4,  150.0, 0.8, 0.5, 40.0, "Wave 4: Heavy Armor"),
+        (10, 60.0,  1.4, 1.2, 30.0, "Wave 5: Reinforcements"),
+        (15, 25.0,  2.5, 3.0, 20.0, "Wave 6: Sonic Blitz"),
+        (6,  100.0, 1.1, 0.8, 35.0, "Wave 7: The Guardians"),
+        (20, 20.0,  2.2, 4.0, 25.0, "Wave 8: Locust Storm"),
+        (3,  300.0, 0.5, 0.3, 50.0, "Wave 9: The Goliaths"),
+        (25, 45.0,  1.8, 2.0, 30.0, "Wave 10: The Final Push"),
     ];
 
-    for (idx, (count, hp, speed, rate, _label)) in wave_configs.into_iter().enumerate() {
+    for (idx, (count, hp, speed, rate, line_h, _label)) in wave_configs.into_iter().enumerate() {
         let mut wave = Wave::new();
         wave.set_max_enemies(count);
         wave.set_spawn_rate(rate);
+        wave.set_wave_line_height(line_h); // Now setting the specific height for this wave
 
         for i in 0..count {
-            // Alternating starting directions for even/odd waves
             let start_dir = if idx % 2 == 0 { Direction::Right } else { Direction::Left };
-
-            // Staggering the vertical starting height slightly for variety
             let start_y = 50.0 + (idx as f32 * 10.0);
 
             let enemy = ClassicEnemy::new(
@@ -1251,7 +1366,7 @@ fn main() {
                 Vec2::new(100.0, start_y),
                 Vec2::new(40.0, 20.0),
                 start_dir,
-                (hp * 0.5) as i32, // Cash value scaled to health
+                (hp * 0.5) as i32,
                 i
             );
             wave.add_enemies(enemy);
@@ -1259,8 +1374,7 @@ fn main() {
         all_waves.push(wave);
     }
 
-    // Save using your existing waveloader logic
     save_waves(&all_waves, "waves.json");
-    println!("Generated 10 unique waves in waves.json successfully!");
+    println!("Generated 10 unique waves with custom line heights!");
 }
 
